@@ -35,7 +35,7 @@ const express_1 = __importDefault(require("express"));
 const database_1 = __importStar(require("./database"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const cors_1 = __importDefault(require("cors"));
-//const reouter = express.Router;
+const payment_1 = require("./payment");
 const app = express_1.default();
 app.use(body_parser_1.default());
 app.use(cors_1.default({ origin: '*' }));
@@ -55,6 +55,14 @@ app.post('/addUser', (req, res) => __awaiter(void 0, void 0, void 0, function* (
     try {
         res.send(yield addUser(req.query.firstName.toString(), req.query.lastName.toString(), req.query.email.toString(), req.query.password.toString()));
         res.status(200);
+    }
+    catch (e) {
+        res.status(500);
+    }
+}));
+app.post('/createPayment', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield payment_1.makeRequest(res);
     }
     catch (e) {
         res.status(500);

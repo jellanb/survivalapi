@@ -1,10 +1,10 @@
 import express from 'express';
 import initDatabase, { findByName ,findByEmail ,createUser } from "./database";
 import bodyParser from "body-parser";
-import md5 from 'js-md5';
 import cors from 'cors';
+import { makeRequest } from './payment';
 
-//const reouter = express.Router;
+
 const app = express();
 app.use(bodyParser());
 app.use(cors({origin: '*'}));
@@ -33,6 +33,15 @@ app.post('/addUser', async (req,res) => {
     try {
         res.send(await addUser(req.query.firstName!.toString(), req.query.lastName!.toString(), req.query.email!.toString(), req.query.password!.toString()));
         res.status(200);
+    }
+    catch (e) {
+        res.status(500);
+    }
+});
+
+app.post('/createPayment', async (req,res) => {
+    try {
+        await makeRequest(res)
     }
     catch (e) {
         res.status(500);

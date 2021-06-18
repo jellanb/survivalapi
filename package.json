@@ -13,11 +13,13 @@
     "js-md5": "^0.7.3",
     "mssql": "^7.1.0",
     "nodemon": "^2.0.7",
+    "request": "^2.88.2",
     "sequelize": "^6.6.2",
     "ts-node": "^10.0.0"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.10"
+    "@types/cors": "^2.8.10",
+    "@types/request": "^2.48.5"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
