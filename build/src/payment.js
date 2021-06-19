@@ -31,7 +31,7 @@ const makeSubscription = (amount) => {
             brand_name: `survivalsro.com`,
             landing_page: 'NO_PREFERENCE',
             user_action: 'PAY_NOW',
-            return_url: `http://localhost:3000/survivalsro/api/Payment/executePayment`,
+            return_url: `http://localhost:3001/survivalsro/api/Payment/executePayment`,
             cancel_url: `http://survival.com` // Url despues de realizar el pago
         }
     };

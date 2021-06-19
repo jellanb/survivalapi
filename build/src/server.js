@@ -81,8 +81,8 @@ app.get('/survivalsro/api/Payment/paymentSuccess', (req, res) => __awaiter(void 
     res.writeHead(301, { Location: 'http://survivalsro.com' });
     res.end();
 }));
-app.listen(3000);
-console.log('app running on port 3000');
+app.listen(3001);
+console.log('app running on port 3001');
 startDb();
 function startDb() {
     return __awaiter(this, void 0, void 0, function* () {
