@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createUser = exports.findByEmail = exports.findByName = void 0;
 const sequelize_1 = require("sequelize");
-const sequelize = new sequelize_1.Sequelize('mssql://sa:FueraMaduro2021@localhost:1434/SRO_VT_ACCOUNT');
+const sequelize = new sequelize_1.Sequelize('mssql://sa:FueraMaduro2021@localhost:1401/SRO_VT_ACCOUNT');
 function initDatabase() {
     return __awaiter(this, void 0, void 0, function* () {
         try {

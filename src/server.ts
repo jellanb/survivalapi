@@ -2,14 +2,14 @@ import express from 'express';
 import initDatabase, { findByName ,findByEmail ,createUser } from "./database";
 import bodyParser from "body-parser";
 import cors from 'cors';
-import { makeRequest } from './payment';
+import { makeRequest, makeSubscription, executePayment } from './payment';
 
 
 const app = express();
 app.use(bodyParser());
 app.use(cors({origin: '*'}));
 
-app.get('/UserByName', async (req,res) => {
+app.get('/survivalsro/api/Users/GetUserByName', async (req,res) => {
     await res.setHeader(
         'Content-Type',
         'application/json'
@@ -19,7 +19,7 @@ app.get('/UserByName', async (req,res) => {
     await res.status(200);
 });
 
-app.get('/EmailByEmail', async (req,res) => {
+app.get('/survivalsro/api/Users/EmailByEmail', async (req,res) => {
     await res.setHeader(
         'Content-Type',
         'application/json'
@@ -29,7 +29,7 @@ app.get('/EmailByEmail', async (req,res) => {
     await res.status(200);
 });
 
-app.post('/addUser', async (req,res) => {
+app.post('/survivalsro/api/Users/SaveUser', async (req,res) => {
     try {
         res.send(await addUser(req.query.firstName!.toString(), req.query.lastName!.toString(), req.query.email!.toString(), req.query.password!.toString()));
         res.status(200);
@@ -39,13 +39,28 @@ app.post('/addUser', async (req,res) => {
     }
 });
 
-app.post('/createPayment', async (req,res) => {
+app.post('/survivalsro/api/Payment/createPayment', async (req,res) => {
     try {
-        await makeRequest(res)
+        await makeRequest(res, makeSubscription(parseInt(req.query.amount!.toString())))
     }
     catch (e) {
         res.status(500);
     }
+});
+
+app.get('/survivalsro/api/Payment/executePayment', async (req,res) => {
+    try {
+        await executePayment(res, req.query.token!.toString())
+    }
+    catch (e) {
+        res.status(500);
+    }
+});
+
+app.get('/survivalsro/api/Payment/paymentSuccess', async (req,res) => {
+    console.log('payment success')
+    res.writeHead( 301, {Location : 'http://survivalsro.com'})
+    res.end();
 });
 
 app.listen(3000);

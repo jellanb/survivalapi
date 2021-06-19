@@ -39,19 +39,19 @@ const payment_1 = require("./payment");
 const app = express_1.default();
 app.use(body_parser_1.default());
 app.use(cors_1.default({ origin: '*' }));
-app.get('/UserByName', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get('/survivalsro/api/Users/GetUserByName', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield res.setHeader('Content-Type', 'application/json');
     const userValid = yield findUserByName(req.query.username.toString());
     yield res.send({ isValid: userValid !== undefined ? false : true });
     yield res.status(200);
 }));
-app.get('/EmailByEmail', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get('/survivalsro/api/Users/EmailByEmail', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield res.setHeader('Content-Type', 'application/json');
     const emailValid = yield findEmailByEmail(req.query.email.toString());
     yield res.send({ isValid: emailValid !== undefined ? false : true });
     yield res.status(200);
 }));
-app.post('/addUser', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.post('/survivalsro/api/Users/SaveUser', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         res.send(yield addUser(req.query.firstName.toString(), req.query.lastName.toString(), req.query.email.toString(), req.query.password.toString()));
         res.status(200);
@@ -60,13 +60,26 @@ app.post('/addUser', (req, res) => __awaiter(void 0, void 0, void 0, function* (
         res.status(500);
     }
 }));
-app.post('/createPayment', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.post('/survivalsro/api/Payment/createPayment', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield payment_1.makeRequest(res);
+        yield payment_1.makeRequest(res, payment_1.makeSubscription(parseInt(req.query.amount.toString())));
     }
     catch (e) {
         res.status(500);
     }
+}));
+app.get('/survivalsro/api/Payment/executePayment', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield payment_1.executePayment(res, req.query.token.toString());
+    }
+    catch (e) {
+        res.status(500);
+    }
+}));
+app.get('/survivalsro/api/Payment/paymentSuccess', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('payment success');
+    res.writeHead(301, { Location: 'http://survivalsro.com' });
+    res.end();
 }));
 app.listen(3000);
 console.log('app running on port 3000');

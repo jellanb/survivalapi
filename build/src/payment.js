@@ -12,37 +12,41 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.makeRequest = void 0;
+exports.executePayment = exports.makeRequest = exports.makeSubscription = void 0;
 const request_1 = __importDefault(require("request"));
 const clientId = 'AWHJvbFj5JEt5QnBNs-D5Is15JfbVLHQ5aBaQa8nUm8d_fUJZM0wexTaW9F4KWphiz3EdP-kzlS6tM__';
 const secret = 'EMo08dX9otbGs6IeyyLTT5JJtecNUkpzQ_zfGXhqMT51pzIulBxtd_e3Qn7fFTxw9yRJJh2VIU8JCWBt';
 const paypalApi = 'https://api-m.sandbox.paypal.com';
 const auth = { user: clientId, pass: secret };
-const subscription = {
-    intent: 'CAPTURE',
-    purchase_units: [{
-            amount: {
-                currency_code: 'USD',
-                value: '115'
-            }
-        }],
-    application_context: {
-        brand_name: `MiTienda.com`,
-        landing_page: 'NO_PREFERENCE',
-        user_action: 'PAY_NOW',
-        return_url: `http://localhost:3000/execute-payment`,
-        cancel_url: `http://localhost:3000/cancel-payment` // Url despues de realizar el pago
-    }
+const makeSubscription = (amount) => {
+    return {
+        intent: 'CAPTURE',
+        purchase_units: [{
+                amount: {
+                    currency_code: 'USD',
+                    value: amount
+                }
+            }],
+        application_context: {
+            brand_name: `survivalsro.com`,
+            landing_page: 'NO_PREFERENCE',
+            user_action: 'PAY_NOW',
+            return_url: `http://localhost:3000/survivalsro/api/Payment/executePayment`,
+            cancel_url: `http://survival.com` // Url despues de realizar el pago
+        }
+    };
 };
-const makeRequest = (res) => __awaiter(void 0, void 0, void 0, function* () {
-    let result = null;
+exports.makeSubscription = makeSubscription;
+const makeRequest = (res, subscription) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         request_1.default.post(`${paypalApi}/v2/checkout/orders`, {
             auth,
             body: subscription,
             json: true
         }, (err, response) => {
-            res.json({ data: response.body });
+            console.log(`make payment for amount ${subscription}`);
+            const result = { data: response.body };
+            res.json(result.data.links.find((link) => link.rel === 'approve'));
         });
     }
     catch (error) {
@@ -50,3 +54,19 @@ const makeRequest = (res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.makeRequest = makeRequest;
+const executePayment = (res, token) => {
+    try {
+        request_1.default.post(`${paypalApi}/v2/checkout/orders/${token}/capture`, {
+            auth,
+            body: {},
+            json: true
+        }, (err, response) => {
+            console.log({ data: response.body });
+            res.redirect('paymentSuccess');
+        });
+    }
+    catch (error) {
+        console.log(error);
+    }
+};
+exports.executePayment = executePayment;
