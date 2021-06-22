@@ -1,16 +1,22 @@
 import { Sequelize, DataTypes, Model } from 'sequelize'
+import fs from 'fs';
 
 const configSql = {
     host: 'localhost',
     database: 'SRO_VT_ACCOUNT',
     user: 'sa',
-    password: 'FueraMaduro2021'
+    password: 'FueraMaduro2021',
+    options: {
+        cryptoCredentialsDetails: {
+            minVersion: 'TLSv1'
+        }
+    }
 }
 
 const sequelize = new Sequelize(configSql.database, configSql.user, configSql.password, {
     host: configSql.host,
     dialect: 'mssql',
-    port: 1401,
+    port: 1433,
 });
 
 export default async function initDatabase() {
