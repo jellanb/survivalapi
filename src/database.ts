@@ -1,6 +1,6 @@
 import { Sequelize, DataTypes, Model } from 'sequelize'
 
-const sequelize = new Sequelize('mssql://sa:FueraMaduro2021@localhost:1434/SRO_VT_ACCOUNT');
+const sequelize = new Sequelize('mssql://sa:FueraMaduro2021@207.244.244.220:1433/SRO_VT_ACCOUNT');
 
 export default async function initDatabase() {
     try{

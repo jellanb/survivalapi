@@ -3,7 +3,7 @@ import  request  from "request";
 
 const clientId = 'AWHJvbFj5JEt5QnBNs-D5Is15JfbVLHQ5aBaQa8nUm8d_fUJZM0wexTaW9F4KWphiz3EdP-kzlS6tM__';
 const secret = 'EMo08dX9otbGs6IeyyLTT5JJtecNUkpzQ_zfGXhqMT51pzIulBxtd_e3Qn7fFTxw9yRJJh2VIU8JCWBt';
-const paypalApi = 'https://api-m.sandbox.paypal.com';
+const paypalApi = 'https://api-m.paypal.com';
 
 interface paypalOrderCreated {
     data: data
