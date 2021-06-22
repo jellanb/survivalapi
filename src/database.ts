@@ -1,6 +1,17 @@
 import { Sequelize, DataTypes, Model } from 'sequelize'
 
-const sequelize = new Sequelize('mssql://sa:FueraMaduro2021@207.244.244.220:1433/SRO_VT_ACCOUNT');
+const configSql = {
+    host: 'localhost',
+    database: 'SRO_VT_ACCOUNT',
+    user: 'sa',
+    password: 'FueraMaduro2021'
+}
+
+const sequelize = new Sequelize(configSql.database, configSql.user, configSql.password, {
+    host: configSql.host,
+    dialect: 'mssql',
+    port: 1401,
+});
 
 export default async function initDatabase() {
     try{
