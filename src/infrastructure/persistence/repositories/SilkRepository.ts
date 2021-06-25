@@ -28,13 +28,14 @@ export const createSilk = async (userID: number, silkQuantity: number) => {
 
 export const updateSilk = async (userID: number, silkQuantity: number) => {
     try {
-        const updateSilk = await Silk.create({
+        const updateSilk = await Silk.update({
             Id: userID,
             SilkOwn: silkQuantity,
             SilkGift: 0,
             silkPoint: 0
+        }, {
+            where: { JID: userID }
         })
-        await updateSilk.save()
         console.log('silk update successfully!')
         return updateSilk
     } catch (error) {

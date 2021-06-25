@@ -12,7 +12,7 @@ import {
 import { findSilkById, updateSilk, createSilk } from './infrastructure/persistence/repositories/SilkRepository'
 
 interface SilkFromUser {
-    silkOwn: number
+    silk_own: number
 }
 
 interface userResult {
@@ -84,8 +84,11 @@ app.get('/survivalsro/api/Users/UserByNamePassword', async (req,res) => {
 
         const silk = await findSilkById(JID)
         if (silk) {
-            const { silkOwn }: SilkFromUser = JSON.parse(JSON.stringify(silk))
-            userPasswordResponse.silk = silkOwn
+            const userSilk = JSON.parse(JSON.stringify(silk))
+            const silkRes: SilkFromUser = userSilk
+            console.log(silkRes)
+            console.log(silkRes.silk_own)
+            userPasswordResponse.silk = silkRes.silk_own
         }
     }
     await res.send(userPasswordResponse);
@@ -132,8 +135,8 @@ app.get('/survivalsro/api/Payment/executePayment', async (req,res) => {
                 const { JID }: userResult  = JSON.parse(JSON.stringify(user))
                 const silk = await findSilkById(JID)
                 if (silk) {
-                    const {silkOwn}: SilkFromUser = JSON.parse(JSON.stringify(silk))
-                    const silkQuantity = silkOwn + parseInt(req.query.silkQuantity!.toString())
+                    const {silk_own}: SilkFromUser = JSON.parse(JSON.stringify(silk))
+                    const silkQuantity = silk_own + parseInt(req.query.silkQuantity!.toString())
                     await updateSilk(JID, silkQuantity)
                 } else {
                     await createSilk(JID, parseInt(req.query.silkQuantity!.toString()))

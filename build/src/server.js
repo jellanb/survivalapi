@@ -61,8 +61,11 @@ app.get('/survivalsro/api/Users/UserByNamePassword', (req, res) => __awaiter(voi
         userPasswordResponse.description = 'Sesion iniciada correctamente!';
         const silk = yield SilkRepository_1.findSilkById(JID);
         if (silk) {
-            const { silkOwn } = JSON.parse(JSON.stringify(silk));
-            userPasswordResponse.silk = silkOwn;
+            const userSilk = JSON.parse(JSON.stringify(silk));
+            const silkRes = userSilk;
+            console.log(silkRes);
+            console.log(silkRes.silk_own);
+            userPasswordResponse.silk = silkRes.silk_own;
         }
     }
     yield res.send(userPasswordResponse);
@@ -70,7 +73,7 @@ app.get('/survivalsro/api/Users/UserByNamePassword', (req, res) => __awaiter(voi
 }));
 app.post('/survivalsro/api/Users/SaveUser', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        res.send(yield UsersRepository_1.createUser(req.query.firstName.toString(), req.query.lastName.toString(), req.query.email.toString(), req.query.password.toString()));
+        res.send(yield UsersRepository_1.createUser(req.query.username.toString(), req.query.lastName.toString(), req.query.email.toString(), req.query.password.toString()));
         res.status(200);
     }
     catch (e) {
@@ -95,8 +98,8 @@ app.get('/survivalsro/api/Payment/executePayment', (req, res) => __awaiter(void 
                 const { JID } = JSON.parse(JSON.stringify(user));
                 const silk = yield SilkRepository_1.findSilkById(JID);
                 if (silk) {
-                    const { silkOwn } = JSON.parse(JSON.stringify(silk));
-                    const silkQuantity = silkOwn + parseInt(req.query.silkQuantity.toString());
+                    const { silk_own } = JSON.parse(JSON.stringify(silk));
+                    const silkQuantity = silk_own + parseInt(req.query.silkQuantity.toString());
                     yield SilkRepository_1.updateSilk(JID, silkQuantity);
                 }
                 else {
@@ -113,6 +116,28 @@ app.get('/survivalsro/api/Payment/executePayment', (req, res) => __awaiter(void 
         }
     }
     catch (e) {
+        res.status(500);
+    }
+}));
+app.get('/survivalsro/api/Payment/test', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield UsersRepository_1.findUserByName('jellan');
+    if (user) {
+        const { JID } = JSON.parse(JSON.stringify(user));
+        const silk = yield SilkRepository_1.findSilkById(JID);
+        if (silk) {
+            const { silk_own } = JSON.parse(JSON.stringify(silk));
+            const silkQuantity = silk_own + parseInt(req.query.silkQuantity.toString());
+            yield SilkRepository_1.updateSilk(JID, silkQuantity);
+        }
+        else {
+            yield SilkRepository_1.createSilk(JID, parseInt(req.query.silkQuantity.toString()));
+        }
+        console.log('payment success');
+        res.writeHead(301, { Location: 'http://survivalsro.com' });
+        res.end();
+    }
+    else {
+        console.log('payment failed');
         res.status(500);
     }
 }));

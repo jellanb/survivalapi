@@ -8,6 +8,7 @@ class Silk extends sequelize_1.Model {
 exports.Silk = Silk;
 Silk.init({
     Id: {
+        primaryKey: true,
         type: sequelize_1.DataTypes.INTEGER,
         field: 'JID'
     },
@@ -28,5 +29,5 @@ Silk.init({
     freezeTableName: true,
     tableName: 'SK_Silk',
     createdAt: false,
-    updatedAt: false
+    updatedAt: false,
 });

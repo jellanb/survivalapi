@@ -38,13 +38,14 @@ const createSilk = (userID, silkQuantity) => __awaiter(void 0, void 0, void 0, f
 exports.createSilk = createSilk;
 const updateSilk = (userID, silkQuantity) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const updateSilk = yield SK_Silk_1.Silk.create({
+        const updateSilk = yield SK_Silk_1.Silk.update({
             Id: userID,
             SilkOwn: silkQuantity,
             SilkGift: 0,
             silkPoint: 0
+        }, {
+            where: { JID: userID }
         });
-        yield updateSilk.save();
         console.log('silk update successfully!');
         return updateSilk;
     }

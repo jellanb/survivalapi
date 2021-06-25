@@ -45,10 +45,10 @@ const findUserByUsernamePassword = (username, password) => __awaiter(void 0, voi
     return result[0];
 });
 exports.findUserByUsernamePassword = findUserByUsernamePassword;
-const createUser = (idUsuario, username, email, pass) => __awaiter(void 0, void 0, void 0, function* () {
+const createUser = (idUser, username, email, pass) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const newUserResult = yield TB_Users_1.Users.create({
-            strUserId: idUsuario,
+            strUserId: idUser,
             password: pass,
             name: username,
             email: email,

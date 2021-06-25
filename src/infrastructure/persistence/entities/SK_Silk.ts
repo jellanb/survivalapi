@@ -5,6 +5,7 @@ export class Silk extends Model{}
 
 Silk.init({
     Id:{
+        primaryKey: true,
         type: DataTypes.INTEGER,
         field: 'JID'
     },
@@ -26,5 +27,5 @@ Silk.init({
         freezeTableName: true,
         tableName: 'SK_Silk',
         createdAt: false,
-        updatedAt: false
+        updatedAt: false,
     });
