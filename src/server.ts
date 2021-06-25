@@ -94,7 +94,7 @@ app.get('/survivalsro/api/Users/UserByNamePassword', async (req,res) => {
 
 app.post('/survivalsro/api/Users/SaveUser', async (req,res) => {
     try {
-        res.send(await createUser(req.query.firstName!.toString(), req.query.lastName!.toString(), req.query.email!.toString(), req.query.password!.toString()));
+        res.send(await createUser(req.query.username!.toString(), req.query.lastName!.toString(), req.query.email!.toString(), req.query.password!.toString()));
         res.status(200);
     }
     catch (e) {

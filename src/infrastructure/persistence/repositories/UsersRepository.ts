@@ -32,10 +32,10 @@ export const findUserByUsernamePassword = async (username: string, password: str
         return result[0]
 }
 
-export const createUser = async (idUsuario: string, username: string, email: string, pass: string) => {
+export const createUser = async (idUser: string, username: string, email: string, pass: string) => {
     try {
         const newUserResult = await Users.create({
-            strUserId: idUsuario,
+            strUserId: idUser,
             password: pass,
             name: username,
             email: email,
