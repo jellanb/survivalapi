@@ -6,10 +6,12 @@ import { makeRequest, makeSubscription, executePayment } from './payment';
 import {
     findUserByName,
     findUserByEmail,
-    createUser,
     findUserByUsernamePassword
 } from './infrastructure/persistence/repositories/UsersRepository'
 import { findSilkById, updateSilk, createSilk } from './infrastructure/persistence/repositories/SilkRepository'
+import { findById } from './infrastructure/persistence/repositories/Net2eRepository'
+import createNewUser from './domain/usecase/create-new-user'
+import {editUserAccount} from "./domain/usecase/edit-user-account";
 
 interface SilkFromUser {
     silk_own: number
@@ -17,18 +19,25 @@ interface SilkFromUser {
 
 interface userResult {
     StrUserID:string,
-    JID:number
+    JID:number,
+    Email: string,
+    password:string
 }
 
-interface userNameResult {
-    isValid: boolean
+interface userDetails {
+    question: string,
+    answer: string
 }
 
 let userPasswordResponse = {
     userName: '',
     silk: 0,
     isSingIn: false,
-    description: ''
+    description: '',
+    email: '',
+    secretQuestion: '',
+    secretAnswer: '',
+    password: ''
 }
 
 let userNameResult = {
@@ -77,12 +86,21 @@ app.get('/survivalsro/api/Users/UserByNamePassword', async (req,res) => {
         userPasswordResponse.isSingIn = false
     }
     if (user) {
-        const { StrUserID, JID }:userResult  = JSON.parse(JSON.stringify(user))
+        const { StrUserID, JID, Email, password }:userResult  = JSON.parse(JSON.stringify(user))
+        const silk = await findSilkById(JID)
+        const net2e = await findById(JID)
         userPasswordResponse.userName = StrUserID
         userPasswordResponse.isSingIn = true
         userPasswordResponse.description = 'Sesion iniciada correctamente!'
+        userPasswordResponse.email = Email
+        userPasswordResponse.password = password
 
-        const silk = await findSilkById(JID)
+        if (net2e) {
+            const { question, answer }: userDetails = JSON.parse(JSON.stringify(net2e))
+            userPasswordResponse.secretQuestion = question
+            userPasswordResponse.secretAnswer = answer
+        }
+
         if (silk) {
             const userSilk = JSON.parse(JSON.stringify(silk))
             const silkRes: SilkFromUser = userSilk
@@ -97,7 +115,26 @@ app.get('/survivalsro/api/Users/UserByNamePassword', async (req,res) => {
 
 app.post('/survivalsro/api/Users/SaveUser', async (req,res) => {
     try {
-        res.send(await createUser(req.query.username!.toString(), req.query.lastName!.toString(), req.query.email!.toString(), req.query.password!.toString()));
+        res.send(
+            await createNewUser(
+                req.query.username!.toString(),
+                req.query.lastName!.toString(),
+                req.query.email!.toString(),
+                req.query.password!.toString(),
+                req.query.secretQuestion!.toString(),
+                req.query.secretAnswer!.toString()
+            ));
+        res.status(200);
+    }
+    catch (e) {
+        res.status(500);
+    }
+});
+
+app.post('/survivalsro/api/Users/EditAccount', async (req,res) => {
+    try {
+        res.send(
+            await editUserAccount(req.query.username!.toString(), req.query.password!.toString(), req.query.email!.toString()))
         res.status(200);
     }
     catch (e) {

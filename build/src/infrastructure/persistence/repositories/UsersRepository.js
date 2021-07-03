@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createUser = exports.findUserByUsernamePassword = exports.findUserByEmail = exports.findUserByName = void 0;
+exports.updateUserById = exports.createUser = exports.findUserByUsernamePassword = exports.findUserByEmail = exports.findUserByName = void 0;
 const TB_Users_1 = require("../entities/TB_Users");
 const findUserByName = (name) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -39,7 +39,7 @@ const findUserByEmail = (email) => __awaiter(void 0, void 0, void 0, function* (
 exports.findUserByEmail = findUserByEmail;
 const findUserByUsernamePassword = (username, password) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield TB_Users_1.Users.findAll({
-        attributes: ['StrUserID', 'JID'],
+        attributes: ['StrUserID', 'JID', 'Email', 'password'],
         where: { strUserId: username, password: password }
     });
     return result[0];
@@ -66,3 +66,19 @@ const createUser = (idUser, username, email, pass) => __awaiter(void 0, void 0, 
     }
 });
 exports.createUser = createUser;
+const updateUserById = (id, password, email) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const updateSilk = yield TB_Users_1.Users.update({
+            password: password,
+            email: email
+        }, {
+            where: { JID: id }
+        });
+        console.log(`User: ${id} update successfully!`);
+        return updateSilk;
+    }
+    catch (error) {
+        console.log(error);
+    }
+});
+exports.updateUserById = updateUserById;

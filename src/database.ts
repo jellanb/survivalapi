@@ -15,7 +15,7 @@ const configSql = {
 export const sequelize = new Sequelize(configSql.database, configSql.user, configSql.password, {
     host: configSql.host,
     dialect: 'mssql',
-    port: 1401,
+    port: 1433,
 });
 
 export default async function initDatabase() {

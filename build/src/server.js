@@ -19,11 +19,18 @@ const cors_1 = __importDefault(require("cors"));
 const payment_1 = require("./payment");
 const UsersRepository_1 = require("./infrastructure/persistence/repositories/UsersRepository");
 const SilkRepository_1 = require("./infrastructure/persistence/repositories/SilkRepository");
+const Net2eRepository_1 = require("./infrastructure/persistence/repositories/Net2eRepository");
+const create_new_user_1 = __importDefault(require("./domain/usecase/create-new-user"));
+const edit_user_account_1 = require("./domain/usecase/edit-user-account");
 let userPasswordResponse = {
     userName: '',
     silk: 0,
     isSingIn: false,
-    description: ''
+    description: '',
+    email: '',
+    secretQuestion: '',
+    secretAnswer: '',
+    password: ''
 };
 let userNameResult = {
     isValid: false
@@ -55,11 +62,19 @@ app.get('/survivalsro/api/Users/UserByNamePassword', (req, res) => __awaiter(voi
         userPasswordResponse.isSingIn = false;
     }
     if (user) {
-        const { StrUserID, JID } = JSON.parse(JSON.stringify(user));
+        const { StrUserID, JID, Email, password } = JSON.parse(JSON.stringify(user));
+        const silk = yield SilkRepository_1.findSilkById(JID);
+        const net2e = yield Net2eRepository_1.findById(JID);
         userPasswordResponse.userName = StrUserID;
         userPasswordResponse.isSingIn = true;
         userPasswordResponse.description = 'Sesion iniciada correctamente!';
-        const silk = yield SilkRepository_1.findSilkById(JID);
+        userPasswordResponse.email = Email;
+        userPasswordResponse.password = password;
+        if (net2e) {
+            const { question, answer } = JSON.parse(JSON.stringify(net2e));
+            userPasswordResponse.secretQuestion = question;
+            userPasswordResponse.secretAnswer = answer;
+        }
         if (silk) {
             const userSilk = JSON.parse(JSON.stringify(silk));
             const silkRes = userSilk;
@@ -73,7 +88,16 @@ app.get('/survivalsro/api/Users/UserByNamePassword', (req, res) => __awaiter(voi
 }));
 app.post('/survivalsro/api/Users/SaveUser', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        res.send(yield UsersRepository_1.createUser(req.query.username.toString(), req.query.lastName.toString(), req.query.email.toString(), req.query.password.toString()));
+        res.send(yield create_new_user_1.default(req.query.username.toString(), req.query.lastName.toString(), req.query.email.toString(), req.query.password.toString(), req.query.secretQuestion.toString(), req.query.secretAnswer.toString()));
+        res.status(200);
+    }
+    catch (e) {
+        res.status(500);
+    }
+}));
+app.post('/survivalsro/api/Users/EditAccount', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        res.send(yield edit_user_account_1.editUserAccount(req.query.username.toString(), req.query.password.toString(), req.query.email.toString()));
         res.status(200);
     }
     catch (e) {
@@ -116,28 +140,6 @@ app.get('/survivalsro/api/Payment/executePayment', (req, res) => __awaiter(void 
         }
     }
     catch (e) {
-        res.status(500);
-    }
-}));
-app.get('/survivalsro/api/Payment/test', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield UsersRepository_1.findUserByName('jellan');
-    if (user) {
-        const { JID } = JSON.parse(JSON.stringify(user));
-        const silk = yield SilkRepository_1.findSilkById(JID);
-        if (silk) {
-            const { silk_own } = JSON.parse(JSON.stringify(silk));
-            const silkQuantity = silk_own + parseInt(req.query.silkQuantity.toString());
-            yield SilkRepository_1.updateSilk(JID, silkQuantity);
-        }
-        else {
-            yield SilkRepository_1.createSilk(JID, parseInt(req.query.silkQuantity.toString()));
-        }
-        console.log('payment success');
-        res.writeHead(301, { Location: 'http://survivalsro.com' });
-        res.end();
-    }
-    else {
-        console.log('payment failed');
         res.status(500);
     }
 }));
