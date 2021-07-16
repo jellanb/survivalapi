@@ -1,5 +1,4 @@
 import { Users } from '../entities/TB_Users'
-import {Silk} from "../entities/SK_Silk";
 
 export const findUserByName = async (name: string) =>{
     try{
