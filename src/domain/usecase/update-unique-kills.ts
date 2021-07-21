@@ -17,19 +17,21 @@ export default async function readUniqueKillsFile() {
     //const path = `C:/Server Files/evaLog/${fileName}`
     const path = `/Users/vn07k3p/Documents/cursos/survivalapi/test/filesTest/_uniqueKills.txt`
     try {
-        const reader = await readline.createInterface({
-            input: fs.createReadStream(path),
-            output: process.stdout
-        })
-       for await (const line of reader) {
-            const { username, monster, dateKill } = await getKillDate(line)
-            if (username === '' && monster === '') {
-                console.log(`[ERROR]: cant not found username and monster from uniqueKills file!`)
-                return //TODO set throw error
+        if (fs.existsSync(path)) {
+            const reader = await readline.createInterface({
+                input: fs.createReadStream(path),
+                output: process.stdout
+            })
+            for await (const line of reader) {
+                const { username, monster, dateKill } = await getKillDate(line)
+                if (username === '' && monster === '') {
+                    console.log(`[ERROR]: cant not found username and monster from uniqueKills file!`)
+                    return //TODO set throw error
+                }
+                await processUniqueKill(username, monster, dateKill)
             }
-            await processUniqueKill(username, monster, dateKill)
+            fs.truncate(path, 0,() => {})
         }
-        fs.truncate(path, 0,() => {})
     } catch (error) {
         console.log(error)
     }
