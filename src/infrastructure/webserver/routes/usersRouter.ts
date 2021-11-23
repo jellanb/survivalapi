@@ -3,11 +3,14 @@ import {
     findUserByEmail,
     findUserByName,
     findUserByUsernamePassword
-} from "../../persistence/repositories/UsersRepository";
-import {findSilkById} from "../../persistence/repositories/SilkRepository";
-import {findById} from "../../persistence/repositories/Net2eRepository";
-import createNewUser from "../../../domain/usecase/create-new-user";
+} from "../../persistence/repositories/shard/TB_UsersRepository";
+import {findSilkById} from "../../persistence/repositories/shard/SilkRepository";
+import {findById} from "../../persistence/repositories/shard/Net2eRepository";
 import {editUserAccount} from "../../../domain/usecase/edit-user-account";
+import {createUserController} from "../../../controllers/users/createUserController";
+import { UsersDetails } from "../../../interfaces/usersInterface";
+import Joi from "joi";
+import lastUniqueKillController from "../../../controllers/users/lastUniqueKillController";
 
 let userNameResult = {
     isValid: false
@@ -42,7 +45,7 @@ interface userResult {
 
 const router = express.Router()
 
-router.get('/GetUserByName', async (req,res) => {
+router.get('/getUserByName', async (req,res) => {
 
     await res.setHeader(
         'Content-Type',
@@ -107,20 +110,42 @@ router.get('/UserByNamePassword', async (req,res) => {
     await res.status(200);
 });
 
-router.post('/SaveUser', async (req,res) => {
+router.post('/saveUser', async (req,res) => {
+
+    const schema = Joi.object({
+        username: Joi.string().required(),
+        lastname: Joi.string().required(),
+        email: Joi.string().required(),
+        password: Joi.string().required(),
+        secretQuestion: Joi.string().required(),
+        secretAnswer: Joi.string().required(),
+    });
+
     try {
-        res.send(
-            await createNewUser(
-                req.query.username!.toString(),
-                req.query.lastName!.toString(),
-                req.query.email!.toString(),
-                req.query.password!.toString(),
-                req.query.secretQuestion!.toString(),
-                req.query.secretAnswer!.toString()
-            ));
-        res.status(200);
+        const { username, lastname, email, password, secretQuestion, secretAnswer } = req.query;
+        const data = {
+            username: username!.toString(),
+            lastname: lastname!.toString(),
+            email: email!.toString(),
+            password: password!.toString(),
+            secretQuestion: secretQuestion!.toString(),
+            secretAnswer: secretAnswer!.toString()
+        }
+        await schema.validateAsync(data);
+        if (Joi.isError(schema)) throw new Error('ALL_PARAMS_REQUIRED');
+
+        const userResult = await createUserController(data);
+
+        if (userResult.username === undefined){
+            res.send(userResult);
+            res.status(200);
+        } else {
+            res.send(userResult);
+            res.status(500);
+        }
     }
-    catch (e) {
+    catch (error) {
+        res.send(error);
         res.status(500);
     }
 });
@@ -135,5 +160,14 @@ router.post('/EditAccount', async (req,res) => {
         res.status(500);
     }
 });
+
+router.get('/getUserLastUniqueKill', async (req, res) => {
+    try {
+        const lastKill = await lastUniqueKillController();
+        res.send(lastKill);
+    } catch (failure) {
+        console.log(failure);
+    }
+})
 
 export = router

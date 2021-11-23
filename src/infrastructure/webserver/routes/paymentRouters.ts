@@ -1,7 +1,7 @@
 import express from 'express';
 import {executePayment, makeRequest, makeSubscription} from "../../../payment";
-import {findUserByName} from "../../persistence/repositories/UsersRepository";
-import {createSilk, findSilkById, updateSilk} from "../../persistence/repositories/SilkRepository";
+import {findUserByName} from "../../persistence/repositories/shard/TB_UsersRepository";
+import {createSilk, findSilkById, updateSilk} from "../../persistence/repositories/shard/SilkRepository";
 
 interface userResult {
     StrUserID:string,

@@ -1,5 +1,5 @@
-import { findUserByName, updateUserById } from '../../infrastructure/persistence/repositories/UsersRepository'
-import { updateNet2eById } from '../../infrastructure/persistence/repositories/Net2eRepository'
+import { findUserByName, updateUserById } from '../../infrastructure/persistence/repositories/shard/TB_UsersRepository'
+import { updateNet2eById } from '../../infrastructure/persistence/repositories/shard/Net2eRepository'
 
 export const editUserAccount = async (username: string, password: string, email: string) => {
     try {

@@ -4,7 +4,7 @@ import {
     updateUniqueRanking,
     createUniqueRanking,
     findUniqueRankingByUsername
-} from '../../infrastructure/persistence/repositories/UniqueRankingRepository'
+} from '../../infrastructure/persistence/repositories/shard/UniqueRankingRepository'
 
 interface killInformation {
     username: string,
