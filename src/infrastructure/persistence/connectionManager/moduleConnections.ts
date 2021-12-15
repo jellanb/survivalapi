@@ -62,7 +62,7 @@ export default async function initDatabase() {
         await sroDevDB.authenticate();
         await shardDB.authenticate();
         console.log('All connection has been established successfully.');
-    } catch (e) {
-        console.log(`Unable to connect to the database: ${e.message}`);
+    } catch (connectionFailure) {
+        console.log(`Unable to connect to the database: ${connectionFailure.message}`);
     }
 }

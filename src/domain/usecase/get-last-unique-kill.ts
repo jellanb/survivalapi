@@ -9,6 +9,7 @@ export default async function getLastUniqueKill(uniqueKillRepository: KillUnique
     const userId = await userRepository.findUserById(charId)
     if (!userId) return
     const username = await accountRepository.findAccountById(userId[0].getDataValue('UserJID'))
-    return username
+    if (!username) return
+    return username[0]
 }
 
