@@ -7,7 +7,7 @@ export interface CharRepository {
 export default async function ShardRepository(): Promise<CharRepository> {
     return {
         findCharById: async (Id: number) => await Char.findAll({
-            attributes: ['CharID'],
+            attributes: ['CharName16'],
             where: { CharID : Id }
         })
     };
