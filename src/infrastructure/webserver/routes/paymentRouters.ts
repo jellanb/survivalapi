@@ -2,6 +2,7 @@ import express from 'express';
 import {executePayment, makeRequest, makeSubscription} from "../../../payment";
 import {findUserByName} from "../../persistence/repositories/shard/TB_UsersRepository";
 import {createSilk, findSilkById, updateSilk} from "../../persistence/repositories/shard/SilkRepository";
+import stripe from 'stripe'
 
 interface userResult {
     StrUserID:string,
@@ -15,8 +16,10 @@ interface SilkFromUser {
 }
 
 const router = express.Router()
+const apiKeyStripe = process.env.apiKeyStripe ?? ''
+const stripePayment = new stripe( apiKeyStripe, { apiVersion: '2020-08-27' })
 
-router.get('/createPayment', async (req,res) => {
+router.get('/createPaymentPaypal', async (req,res) => {
     try {
         await makeRequest(
             res,
@@ -34,7 +37,7 @@ router.get('/createPayment', async (req,res) => {
     }
 });
 
-router.get('/executePayment', async (req,res) => {
+router.get('/executePaymentPaypal', async (req,res) => {
     try {
         const paymentSuccess = await executePayment(
             res, req.query.token!.toString(),
@@ -59,12 +62,29 @@ router.get('/executePayment', async (req,res) => {
                 console.log('payment failed')
                 res.status(500);
             }
-
         }
     }
     catch (e) {
         res.status(500);
     }
 });
+
+router.post('/createPaymentIntentStripe', async (req, res) => {
+    const { items } = req.body;
+    console.log(apiKeyStripe)
+
+    // Create a PaymentIntent with the order amount and currency
+    const paymentIntent = await stripePayment.paymentIntents.create({
+        amount: 1000,
+        currency: 'USD',
+        automatic_payment_methods: {
+            enabled: true,
+        },
+    });
+    res.send({
+        clientSecret: paymentIntent.client_secret,
+    });
+})
+
 
 export = router

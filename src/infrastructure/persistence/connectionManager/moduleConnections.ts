@@ -38,6 +38,18 @@ const shardConfig = {
     }
 }
 
+const vPlusConfig = {
+    host: process.env['databaseHost']!,
+    database: process.env['databaseVPlus']!,
+    user: process.env['databaseUser']!,
+    password: process.env['databasePassword'],
+    options: {
+        cryptoCredentialsDetails: {
+            minVersion: 'TLSv1'
+        }
+    }
+}
+
 export const accountDB = new Sequelize(accountConfig.database, accountConfig.user, accountConfig.password, {
     host: accountConfig.host,
     dialect: 'mssql',
@@ -56,11 +68,18 @@ export const shardDB = new Sequelize(shardConfig.database, shardConfig.user, sha
     port: 1433,
 });
 
+export const vPlusDB = new Sequelize(vPlusConfig.database, vPlusConfig.user, vPlusConfig.password, {
+    host: vPlusConfig.host,
+    dialect: 'mssql',
+    port: 1433,
+});
+
 export default async function initDatabase() {
     try{
         await accountDB.authenticate();
         await sroDevDB.authenticate();
         await shardDB.authenticate();
+        await vPlusDB.authenticate();
         console.log('All connection has been established successfully.');
     } catch (connectionFailure) {
         console.log(`Unable to connect to the database: ${connectionFailure.message}`);
