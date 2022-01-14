@@ -6,6 +6,7 @@ import { CharRepository } from "../../infrastructure/persistence/repositories/sh
 export default async function getLastUniqueKill(uniqueKillRepository: KillUniqueRepository, userRepository: UserRepository, charRepository: CharRepository) {
     const uniqueKill = await uniqueKillRepository.findLastKill();
     const charId = uniqueKill[0].getDataValue('charId')
+    console.log(charId)
     if (!charId) return
     const username = await charRepository.findCharById(charId)
     if (!username) return
