@@ -23,7 +23,7 @@ interface links {
     method: string
 }
 
-const auth = { user: clientId, pass: secret }
+const auth = { user: `${process.env['paypalClientId']}`, pass: `${process.env['paypalSecret']}` }
 export const makeSubscription = (amount: number, silkQuantity: string, username: string) => {
 
     return {
