@@ -1,10 +1,6 @@
 import  request  from "request";
-import * as Console from "console";
 
-
-
-const paypalApi = 'https://api-m.paypal.com';
-//const paypalApi = 'https://api-m.sandbox.paypal.com';
+const paypalApi = `${process.env['paypalUrl']}`
 
 interface paypalOrderCreated {
     data: data
