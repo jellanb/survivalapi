@@ -2,7 +2,8 @@ import express from 'express';
 import {executePayment, makeRequest, makeSubscription} from "../../../payment";
 import {findUserByName} from "../../persistence/repositories/shard/TB_UsersRepository";
 import {createSilk, findSilkById, updateSilk} from "../../persistence/repositories/shard/SilkRepository";
-import stripe from 'stripe'
+import stripe from 'stripe';
+import mercadopago from 'mercadopago';
 
 interface userResult {
     StrUserID:string,
@@ -18,6 +19,7 @@ interface SilkFromUser {
 const router = express.Router()
 const apiKeyStripe = process.env.apiKeyStripe ?? ''
 const stripePayment = new stripe( apiKeyStripe, { apiVersion: '2020-08-27' })
+const tokenMP = process.env.ACCESS_TOKEN_MP ?? ''
 
 router.get('/createPaymentPaypal', async (req,res) => {
     try {
@@ -84,7 +86,40 @@ router.post('/createPaymentIntentStripe', async (req, res) => {
     res.send({
         clientSecret: paymentIntent.client_secret,
     });
-})
+});
 
+router.post('/process-payment-mercadopago', async (req, res) =>{
+    console.log(`generando pago con mercado pago por un valor de ${req.body.transaction_amount}USD`)
+    console.log(tokenMP)
+    mercadopago.configurations.setAccessToken(tokenMP);
+    const payment_data = {
+        transaction_amount: req.body.transaction_amount,
+        token: req.body.token,
+        description: req.body.description,
+        installments: Number(req.body.installments),
+        payment_method_id: req.body.paymentMethodId,
+        issuer_id: req.body.issuer,
+        payer: {
+            email: req.body.payer.email,
+            identification: {
+                type: req.body.payer.docType,
+                number: req.body.payer.docNumber,
+            },
+        },
+    };
+
+    mercadopago.payment
+        .save(payment_data)
+        .then((response) => {
+            return res.status(response.status).json({
+                status: response.body.status,
+                status_detail: response.body.status_detail,
+                id: response.body.id,
+            });
+        })
+        .catch((err) => {
+            return res.status(500).send(err);
+        });
+});
 
 export = router

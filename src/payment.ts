@@ -1,7 +1,5 @@
 import  request  from "request";
 
-const paypalApi = `${process.env['paypalUrl']}`
-
 interface paypalOrderCreated {
     data: data
 }
@@ -17,6 +15,8 @@ interface links {
     rel: string,
     method: string
 }
+
+const paypalApi = `${process.env['paypalUrl']}`
 
 const auth = { user: `${process.env['paypalClientId']}`, pass: `${process.env['paypalSecret']}` }
 export const makeSubscription = (amount: number, silkQuantity: string, username: string) => {

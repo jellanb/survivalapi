@@ -4,11 +4,10 @@ import {
     findUserByName,
     findUserByUsernamePassword
 } from "../../persistence/repositories/shard/TB_UsersRepository";
-import {findSilkById} from "../../persistence/repositories/shard/SilkRepository";
+import {createSilk, findSilkById, updateSilk} from "../../persistence/repositories/shard/SilkRepository";
 import {findById} from "../../persistence/repositories/shard/Net2eRepository";
 import {editUserAccount} from "../../../domain/usecase/edit-user-account";
 import {createUserController} from "../../../controllers/users/createUserController";
-import { UsersDetails } from "../../../interfaces/usersInterface";
 import Joi from "joi";
 import lastUniqueKillController from "../../../controllers/users/lastUniqueKillController";
 
@@ -167,6 +166,30 @@ router.get('/getUserLastUniqueKill', async (req, res) => {
         res.send(lastKill);
     } catch (failure) {
         console.log(failure);
+    }
+})
+
+router.post('/add-silk-after-payment', async (req,res) => {
+    try {
+        const user = await findUserByName(req.query.username!.toString())
+        if (user) {
+            const {JID}: userResult = JSON.parse(JSON.stringify(user))
+            const silk = await findSilkById(JID)
+            if (silk) {
+                const {silk_own}: SilkFromUser = JSON.parse(JSON.stringify(silk))
+                const silkQuantity = silk_own + parseInt(req.query.silkQuantity!.toString())
+                await updateSilk(JID, silkQuantity)
+            } else {
+                await createSilk(JID, parseInt(req.query.silkQuantity!.toString()))
+            }
+            console.log('payment success')
+            res.send(user);
+            res.status(200)
+            res.end();
+        }
+    }catch (failure) {
+        console.log(failure);
+        res.status(500);
     }
 })
 

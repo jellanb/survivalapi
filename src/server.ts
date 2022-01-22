@@ -28,11 +28,13 @@ const httpsServer = https.createServer({
 }, app);
 const httpServer = http.createServer(app);
 
-httpServer.listen(process.env['http_port']);
-console.log(`app running on port ${process.env['http_port']} to http server`);
+httpServer.listen(process.env['http_port'], () => {
+    console.log(`app running on port ${process.env['http_port']} to http server`);
+});
 
-httpsServer.listen(process.env["https_port"]);
-console.log(`app running on port ${process.env['https_port']} to https server`);
+httpsServer.listen(process.env["https_port"], () => {
+    console.log(`app running on port ${process.env['https_port']} to https server`);
+});
 
 initDatabase();
 
