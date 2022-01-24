@@ -110,14 +110,14 @@ router.post('/process-payment-mercadopago', async (req, res) =>{
 
     mercadopago.payment
         .save(payment_data)
-        .then((response) => {
+        .then((response: { status: number; body: { status: any; status_detail: any; id: any; }; }) => {
             return res.status(response.status).json({
                 status: response.body.status,
                 status_detail: response.body.status_detail,
                 id: response.body.id,
             });
         })
-        .catch((err) => {
+        .catch((err: any) => {
             return res.status(500).send(err);
         });
 });
