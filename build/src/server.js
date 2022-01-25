@@ -29,13 +29,13 @@ const moduleConnections_1 = __importDefault(require("./infrastructure/persistenc
 const paymentRouters_1 = __importDefault(require("./infrastructure/webserver/routes/paymentRouters"));
 const usersRouter_1 = __importDefault(require("./infrastructure/webserver/routes/usersRouter"));
 const killsRouter_1 = __importDefault(require("./infrastructure/webserver/routes/killsRouter"));
-const https = __importStar(require("https"));
-const fs = __importStar(require("fs"));
 const http = __importStar(require("http"));
+/*
 const ssl = {
     key: fs.readFileSync('key.pem'),
     cert: fs.readFileSync('cert.pem')
 };
+*/
 const app = express_1.default();
 app.use(body_parser_1.default());
 app.use(cors_1.default({ origin: '*' }));
@@ -43,15 +43,15 @@ app.use('/payment', paymentRouters_1.default);
 app.use('/users', usersRouter_1.default);
 app.use('/job', killsRouter_1.default);
 app.use('/unique', killsRouter_1.default);
-const httpsServer = https.createServer({
+/*const httpsServer = https.createServer({
     key: ssl.key,
     cert: ssl.cert
-}, app);
+}, app);*/
 const httpServer = http.createServer(app);
 httpServer.listen(process.env['http_port'], () => {
     console.log(`app running on port ${process.env['http_port']} to http server`);
 });
-httpsServer.listen(process.env["https_port"], () => {
+/*httpsServer.listen(process.env["https_port"], () => {
     console.log(`app running on port ${process.env['https_port']} to https server`);
-});
+});*/
 moduleConnections_1.default();
