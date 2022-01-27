@@ -9,7 +9,7 @@ var __asyncValues = (this && this.__asyncValues) || function (o) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const UniqueRankingRepository_1 = require("../../infrastructure/persistence/repositories/shard/UniqueRankingRepository");
 async function getAllUniqueKills() {
-    const uniqueRankingKills = await UniqueRankingRepository_1.findAllUniqueKills();
+    const uniqueRankingKills = await (0, UniqueRankingRepository_1.findAllUniqueKills)();
     const usersNamesRanking = await getUsersNamesRaking(uniqueRankingKills);
     const uniqueKills = await getUniqueKillsByUserName(uniqueRankingKills, usersNamesRanking);
     return await prepareData(usersNamesRanking, uniqueKills, uniqueRankingKills);

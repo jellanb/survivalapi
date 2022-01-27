@@ -51,14 +51,14 @@ async function readUniqueKillsFile() {
 }
 exports.default = readUniqueKillsFile;
 const processUniqueKill = async (username, monster, dateKill) => {
-    const lastUniqueKills = await UniqueRankingRepository_1.findUniqueRankingByUsername(username);
+    const lastUniqueKills = await (0, UniqueRankingRepository_1.findUniqueRankingByUsername)(username);
     if (lastUniqueKills === undefined) {
         console.log(`saved unique kill monster : ${monster} to username: ${username}!`);
-        return await UniqueRankingRepository_1.createUniqueRanking(username, monster);
+        return await (0, UniqueRankingRepository_1.createUniqueRanking)(username, monster);
     }
     else {
         console.log(`update unique kill monster : ${monster} to username: ${username}`);
-        return await UniqueRankingRepository_1.updateUniqueRanking(username, monster);
+        return await (0, UniqueRankingRepository_1.updateUniqueRanking)(username, monster);
     }
 };
 async function getKillDate(uniqueKillsUpdate) {

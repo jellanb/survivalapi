@@ -9,7 +9,7 @@ const UserRepository_1 = __importDefault(require("../../infrastructure/persisten
 const _ShardRepository_1 = __importDefault(require("../../infrastructure/persistence/repositories/shard/_ShardRepository"));
 async function lastUniqueKillController() {
     try {
-        const lastKillResult = await get_last_unique_kill_1.default(await KillUniqueRepository_1.default(), await UserRepository_1.default(), await _ShardRepository_1.default());
+        const lastKillResult = await (0, get_last_unique_kill_1.default)(await (0, KillUniqueRepository_1.default)(), await (0, UserRepository_1.default)(), await (0, _ShardRepository_1.default)());
         return lastKillResult;
     }
     catch (error) {

@@ -82,6 +82,6 @@ export default async function initDatabase() {
         await vPlusDB.authenticate();
         console.log('All connection has been established successfully.');
     } catch (connectionFailure) {
-        console.log(`Unable to connect to the database: ${connectionFailure.message}`);
+        console.log(`Unable to connect to the database: ${connectionFailure}`);
     }
 }

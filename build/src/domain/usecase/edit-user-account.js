@@ -5,10 +5,10 @@ const TB_UsersRepository_1 = require("../../infrastructure/persistence/repositor
 const Net2eRepository_1 = require("../../infrastructure/persistence/repositories/shard/Net2eRepository");
 const editUserAccount = async (username, password, email) => {
     try {
-        const user = await TB_UsersRepository_1.findUserByName(username);
+        const user = await (0, TB_UsersRepository_1.findUserByName)(username);
         const { JID, } = JSON.parse(JSON.stringify(user));
-        await TB_UsersRepository_1.updateUserById(JID, password, email);
-        await Net2eRepository_1.updateNet2eById(JID, password);
+        await (0, TB_UsersRepository_1.updateUserById)(JID, password, email);
+        await (0, Net2eRepository_1.updateNet2eById)(JID, password);
         return { username, password, email };
     }
     catch (e) {

@@ -8,7 +8,7 @@ const get_all_unique_kills_1 = __importDefault(require("../../../domain/usecase/
 const router = express_1.default.Router();
 router.post('/UpdateKills', async (req, res) => {
     try {
-        await update_unique_kills_1.default();
+        await (0, update_unique_kills_1.default)();
         res.status(200);
         res.end();
     }
@@ -20,7 +20,7 @@ router.post('/UpdateKills', async (req, res) => {
 });
 router.get('/ListUniqueKill', async (req, res) => {
     try {
-        res.send(await get_all_unique_kills_1.default());
+        res.send(await (0, get_all_unique_kills_1.default)());
         res.status(200);
         res.end();
     }

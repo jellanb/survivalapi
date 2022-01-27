@@ -10,6 +10,7 @@ const edit_user_account_1 = require("../../../domain/usecase/edit-user-account")
 const createUserController_1 = require("../../../controllers/users/createUserController");
 const joi_1 = __importDefault(require("joi"));
 const lastUniqueKillController_1 = __importDefault(require("../../../controllers/users/lastUniqueKillController"));
+const get_users_online_controller_1 = __importDefault(require("../../../controllers/users/get-users-online-controller"));
 let userNameResult = {
     isValid: false
 };
@@ -26,7 +27,7 @@ let userPasswordResponse = {
 const router = express_1.default.Router();
 router.get('/getUserByName', async (req, res) => {
     await res.setHeader('Content-Type', 'application/json');
-    const user = await TB_UsersRepository_1.findUserByName(req.query.username.toString());
+    const user = await (0, TB_UsersRepository_1.findUserByName)(req.query.username.toString());
     userNameResult.isValid = false;
     if (user) {
         userNameResult.isValid = true;
@@ -36,21 +37,21 @@ router.get('/getUserByName', async (req, res) => {
 });
 router.get('/EmailByEmail', async (req, res) => {
     await res.setHeader('Content-Type', 'application/json');
-    const emailValid = await TB_UsersRepository_1.findUserByEmail(req.query.email.toString());
+    const emailValid = await (0, TB_UsersRepository_1.findUserByEmail)(req.query.email.toString());
     await res.send({ isValid: emailValid !== undefined ? false : true });
     await res.status(200);
 });
 router.get('/UserByNamePassword', async (req, res) => {
     await res.setHeader('Content-Type', 'application/json');
-    const user = await TB_UsersRepository_1.findUserByUsernamePassword(req.query.username.toString(), req.query.password.toString());
+    const user = await (0, TB_UsersRepository_1.findUserByUsernamePassword)(req.query.username.toString(), req.query.password.toString());
     if (!user) {
         userPasswordResponse.description = 'Usuario y contraseña incorrectos!';
         userPasswordResponse.isSingIn = false;
     }
     if (user) {
         const { StrUserID, JID, Email, password } = JSON.parse(JSON.stringify(user));
-        const silk = await SilkRepository_1.findSilkById(JID);
-        const net2e = await Net2eRepository_1.findById(JID);
+        const silk = await (0, SilkRepository_1.findSilkById)(JID);
+        const net2e = await (0, Net2eRepository_1.findById)(JID);
         userPasswordResponse.userName = StrUserID;
         userPasswordResponse.isSingIn = true;
         userPasswordResponse.description = 'Sesion iniciada correctamente!';
@@ -94,7 +95,7 @@ router.post('/saveUser', async (req, res) => {
         await schema.validateAsync(data);
         if (joi_1.default.isError(schema))
             throw new Error('ALL_PARAMS_REQUIRED');
-        const userResult = await createUserController_1.createUserController(data);
+        const userResult = await (0, createUserController_1.createUserController)(data);
         if (userResult.username === undefined) {
             res.send(userResult);
             res.status(200);
@@ -111,7 +112,7 @@ router.post('/saveUser', async (req, res) => {
 });
 router.post('/EditAccount', async (req, res) => {
     try {
-        res.send(await edit_user_account_1.editUserAccount(req.query.username.toString(), req.query.password.toString(), req.query.email.toString()));
+        res.send(await (0, edit_user_account_1.editUserAccount)(req.query.username.toString(), req.query.password.toString(), req.query.email.toString()));
         res.status(200);
     }
     catch (e) {
@@ -120,7 +121,7 @@ router.post('/EditAccount', async (req, res) => {
 });
 router.get('/getUserLastUniqueKill', async (req, res) => {
     try {
-        const lastKill = await lastUniqueKillController_1.default();
+        const lastKill = await (0, lastUniqueKillController_1.default)();
         res.send(lastKill);
     }
     catch (failure) {
@@ -129,23 +130,34 @@ router.get('/getUserLastUniqueKill', async (req, res) => {
 });
 router.post('/add-silk-after-payment', async (req, res) => {
     try {
-        const user = await TB_UsersRepository_1.findUserByName(req.query.username.toString());
+        const user = await (0, TB_UsersRepository_1.findUserByName)(req.query.username.toString());
         if (user) {
             const { JID } = JSON.parse(JSON.stringify(user));
-            const silk = await SilkRepository_1.findSilkById(JID);
+            const silk = await (0, SilkRepository_1.findSilkById)(JID);
             if (silk) {
                 const { silk_own } = JSON.parse(JSON.stringify(silk));
                 const silkQuantity = silk_own + parseInt(req.query.silkQuantity.toString());
-                await SilkRepository_1.updateSilk(JID, silkQuantity);
+                await (0, SilkRepository_1.updateSilk)(JID, silkQuantity);
             }
             else {
-                await SilkRepository_1.createSilk(JID, parseInt(req.query.silkQuantity.toString()));
+                await (0, SilkRepository_1.createSilk)(JID, parseInt(req.query.silkQuantity.toString()));
             }
             console.log('payment success');
             res.send(user);
             res.status(200);
             res.end();
         }
+    }
+    catch (failure) {
+        console.log(failure);
+        res.status(500);
+    }
+});
+router.get('/getQuantityUsersOnline', async (req, res) => {
+    try {
+        const usersOnline = await (0, get_users_online_controller_1.default)();
+        res.send({ usersOnline: usersOnline });
+        res.status(200);
     }
     catch (failure) {
         console.log(failure);

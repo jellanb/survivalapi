@@ -80,7 +80,7 @@ async function initDatabase() {
         console.log('All connection has been established successfully.');
     }
     catch (connectionFailure) {
-        console.log(`Unable to connect to the database: ${connectionFailure.message}`);
+        console.log(`Unable to connect to the database: ${connectionFailure}`);
     }
 }
 exports.default = initDatabase;

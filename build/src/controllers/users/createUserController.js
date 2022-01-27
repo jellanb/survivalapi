@@ -7,7 +7,7 @@ exports.createUserController = void 0;
 const create_new_user_1 = __importDefault(require("../../domain/usecase/create-new-user"));
 const createUserController = async (userDetails) => {
     try {
-        return await create_new_user_1.default(userDetails);
+        return await (0, create_new_user_1.default)(userDetails);
     }
     catch (error) {
         let errorMessage = '';
