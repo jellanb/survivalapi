@@ -5,6 +5,7 @@ import initDatabase from './infrastructure/persistence/connectionManager/moduleC
 import paymentRouter from './infrastructure/webserver/routes/paymentRouters';
 import usersRouter from './infrastructure/webserver/routes/usersRouter'
 import killRouter from './infrastructure/webserver/routes/killsRouter';
+import fortressInfo from './infrastructure/webserver/routes/fortress'
 import * as https from "https";
 import * as fs from "fs";
 import * as http from "http";
@@ -17,6 +18,7 @@ const ssl = {
 const app = express();
 app.use(bodyParser());
 app.use(cors({origin: '*'}));
+app.use('/fortress', fortressInfo)
 app.use('/payment', paymentRouter)
 app.use('/users', usersRouter)
 app.use('/job', killRouter)
