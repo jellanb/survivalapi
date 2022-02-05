@@ -17,6 +17,7 @@ interface links {
 }
 
 const paypalApi = `${process.env['paypalUrl']}`
+const server_ip = `${process.env['server_ip']}`
 
 const auth = { user: `${process.env['paypalClientId']}`, pass: `${process.env['paypalSecret']}` }
 export const makeSubscription = (amount: number, silkQuantity: string, username: string) => {
@@ -33,7 +34,7 @@ export const makeSubscription = (amount: number, silkQuantity: string, username:
             brand_name: `survivalsro.com`,
             landing_page: 'NO_PREFERENCE', // Default, para mas informacion https://developer.paypal.com/docs/api/orders/v2/#definition-order_application_context
             user_action: 'PAY_NOW', // Accion para que en paypal muestre el monto del pago
-            return_url: `http://localhost:3002/Payment/executePaymentPaypal?silkQuantity=${silkQuantity}&username=${username}`, // Url despues de realizar el pago
+            return_url: `${server_ip}/Payment/executePaymentPaypal?silkQuantity=${silkQuantity}&username=${username}`, // Url despues de realizar el pago
             cancel_url: `http://survivalsro.com` // Url despues de realizar el pago
         }
     }
