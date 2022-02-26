@@ -136,7 +136,7 @@ router.post('/saveUser', async (req,res) => {
 
         const userResult = await createUserController(data);
 
-        if (userResult.username === undefined){
+        if (userResult.username === username){
             res.send(userResult);
             res.status(200);
         } else {
@@ -173,6 +173,7 @@ router.get('/getUserLastUniqueKill', async (req, res) => {
 router.post('/add-silk-after-payment', async (req,res) => {
     try {
         const user = await findUserByName(req.query.username!.toString())
+        console.log(`Init add silk after payment to user ${user}`)
         if (user) {
             const {JID}: userResult = JSON.parse(JSON.stringify(user))
             const silk = await findSilkById(JID)

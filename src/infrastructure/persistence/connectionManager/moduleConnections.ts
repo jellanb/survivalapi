@@ -1,5 +1,6 @@
 import {Sequelize} from "sequelize";
 import dotenv from 'dotenv';
+import SurvivalLogger from "../../observability/logging/logger";
 dotenv.config();
 
 const accountConfig = {
@@ -80,8 +81,8 @@ export default async function initDatabase() {
         await sroDevDB.authenticate();
         await shardDB.authenticate();
         await vPlusDB.authenticate();
-        console.log('All connection has been established successfully.');
+        SurvivalLogger().info('All connection has been established successfully.');
     } catch (connectionFailure) {
-        console.log(`Unable to connect to the database: ${connectionFailure}`);
+        SurvivalLogger().error(`Unable to connect to the database: ${connectionFailure}`)
     }
 }
