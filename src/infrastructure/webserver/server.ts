@@ -1,16 +1,17 @@
 import express from 'express';
-import bodyParser from "body-parser";
+import bodyParser from 'body-parser';
 import cors from 'cors';
 import paymentRouter from '../../infrastructure/webserver/routes/paymentRouters';
-import usersRouter from '../../infrastructure/webserver/routes/usersRouter'
-import killRouter from '../../infrastructure/webserver/routes/killsRouter';
-import fortressInfo from '../../infrastructure/webserver/routes/fortress'
-import * as https from "https";
-import * as fs from "fs";
-import * as http from "http";
-import SurvivalLogger from "../observability/logging/logger";
+import usersRouter from '../../infrastructure/webserver/routes/usersRouter';
+import * as https from 'https';
+import * as fs from 'fs';
+import * as http from 'http';
+import SurvivalLogger from '../observability/logging/logger';
+import config from '../../utils/config';
 
 export default async function InitWebServer(){
+    const httpPort = process.env['http_port'];
+    const httpsPort= process.env['https_port'];
     const ssl = {
         key: fs.readFileSync('key.pem'),
         cert: fs.readFileSync('cert.pem')
@@ -19,11 +20,8 @@ export default async function InitWebServer(){
     const app = express();
     app.use(bodyParser());
     app.use(cors({origin: '*'}));
-    app.use('/fortress', fortressInfo)
-    app.use('/payment', paymentRouter)
-    app.use('/users', usersRouter)
-    app.use('/job', killRouter)
-    app.use('/unique', killRouter)
+    app.use('/payment', paymentRouter);
+    app.use('/users', usersRouter);
 
     const httpsServer = https.createServer({
         key: ssl.key,
@@ -32,12 +30,12 @@ export default async function InitWebServer(){
 
     const httpServer = http.createServer(app);
 
-    await httpServer.listen(process.env['http_port'], () => {
-        SurvivalLogger().info(`app running on port ${process.env['http_port']} to http server`)
+    await httpServer.listen(httpPort, () => {
+        SurvivalLogger.info(`app running on port ${config.httpPort} to http server`)
     });
 
-    await httpsServer.listen(process.env["https_port"], () => {
-        SurvivalLogger().info(`app running on port ${process.env['https_port']} to https server`)
+    await httpsServer.listen(httpsPort, () => {
+        SurvivalLogger.info(`app running on port ${config.httpsPort} to https server`)
     });
 }
 

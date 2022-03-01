@@ -9,7 +9,7 @@ interface SurvivalLogger {
     debug: (messages: [] | Object | null | string) => winston.Logger;
 }
 
-export default function SurvivalLogger(): SurvivalLogger {
+export function SurvivalLogger(): SurvivalLogger {
     const prefix: string = '[Survival-api]';
     const transports = [];
     transports.push(new winston.transports.Console());
@@ -40,3 +40,5 @@ function processMessage(msg: [] | Object | null | string) {
     }
     return msg;
 }
+
+export default SurvivalLogger();

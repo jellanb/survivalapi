@@ -4,7 +4,7 @@ export interface CharRepository {
     findCharById: (Id: number) => Promise<Char[] | null>
 }
 
-export default async function ShardRepository(): Promise<CharRepository> {
+export function ShardRepository(): CharRepository {
     return {
         findCharById: async (Id: number) => await Char.findAll({
             attributes: ['CharName16'],
@@ -12,3 +12,5 @@ export default async function ShardRepository(): Promise<CharRepository> {
         })
     };
 }
+
+export default ShardRepository();

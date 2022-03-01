@@ -8,8 +8,8 @@ async function runApp() {
 };
 
 runApp()
-    .then(() => SurvivalLogger().info('App init successfully'))
-    .catch((failure) => SurvivalLogger().error(failure.message))
+    .then(() => SurvivalLogger.info('App init successfully'))
+    .catch((failure) => SurvivalLogger.error(failure.message))
 
 
 

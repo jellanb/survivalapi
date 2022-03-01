@@ -1,4 +1,6 @@
-import  request  from "request";
+import  request  from 'request';
+import config from './utils/config'
+import SurvivalLogger from './infrastructure/observability/logging/logger';
 
 interface paypalOrderCreated {
     data: data
@@ -16,10 +18,7 @@ interface links {
     method: string
 }
 
-const paypalApi = `${process.env['paypalUrl']}`
-const server_ip = `${process.env['server_ip']}`
-
-const auth = { user: `${process.env['paypalClientId']}`, pass: `${process.env['paypalSecret']}` }
+const auth = { user: `${config.paypalClientId}`, pass: `${config.paypalSecret}` }
 export const makeSubscription = (amount: number, silkQuantity: string, username: string) => {
 
     return {
@@ -34,7 +33,7 @@ export const makeSubscription = (amount: number, silkQuantity: string, username:
             brand_name: `survivalsro.com`,
             landing_page: 'NO_PREFERENCE', // Default, para mas informacion https://developer.paypal.com/docs/api/orders/v2/#definition-order_application_context
             user_action: 'PAY_NOW', // Accion para que en paypal muestre el monto del pago
-            return_url: `${server_ip}/Payment/executePaymentPaypal?silkQuantity=${silkQuantity}&username=${username}`, // Url despues de realizar el pago
+            return_url: `${config.httpServerUrl}/Payment/executePaymentPaypal?silkQuantity=${silkQuantity}&username=${username}`, // Url despues de realizar el pago
             cancel_url: `http://survivalsro.com` // Url despues de realizar el pago
         }
     }
@@ -43,12 +42,11 @@ export const makeSubscription = (amount: number, silkQuantity: string, username:
 
 export const makeRequest = async (res: any, subscription: object) => {
     try {
-        request.post(`${paypalApi}/v2/checkout/orders`, {
+        request.post(`${config.paypalUrl}/v2/checkout/orders`, {
             auth,
             body: subscription,
             json: true
         },(err, response) => {
-            console.log(`make payment for amount ${subscription}`)
             const result: paypalOrderCreated = { data: response.body };
             res.json(result.data.links.find((link) => link.rel === 'approve'));
         });
@@ -58,7 +56,7 @@ export const makeRequest = async (res: any, subscription: object) => {
 }
 
 export const executePayment = (res: any, token: string, silkQuantity: string): object => {
-        return request.post(`${paypalApi}/v2/checkout/orders/${token}/capture`, {
+        return request.post(`${config.paypalUrl}/v2/checkout/orders/${token}/capture`, {
             auth,
             body: {},
             json: true

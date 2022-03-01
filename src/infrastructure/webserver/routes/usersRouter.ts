@@ -1,116 +1,66 @@
 import express from 'express';
-import {
-    findUserByEmail,
-    findUserByName,
-    findUserByUsernamePassword
-} from "../../persistence/repositories/shard/TB_UsersRepository";
-import {createSilk, findSilkById, updateSilk} from "../../persistence/repositories/shard/SilkRepository";
-import {findById} from "../../persistence/repositories/shard/Net2eRepository";
-import {editUserAccount} from "../../../domain/usecase/edit-user-account";
-import {createUserController} from "../../../controllers/users/createUserController";
+import {addNewUserController} from "../../../controllers/users/add-new-user-controller";
 import Joi from "joi";
-import lastUniqueKillController from "../../../controllers/users/lastUniqueKillController";
-import getUsersOnlineController from "../../../controllers/users/get-users-online-controller";
+import {addSilkAfterPaymentController} from "../../../controllers/users/add-silk-after-payment-controller";
+import {getLoadInformationController} from "../../../controllers/users/get-load-information-controller";
+import SurvivalLogger from "../../observability/logging/logger";
+import loginUserController from "../../../controllers/users/login-controller";
+import emailValidationsController from "../../../controllers/users/email-validations-controller";
+import AccountValidationsController from "../../../controllers/users/account-validations-controller";
+import EditUserAccountController from "../../../controllers/users/edit-user-account-controller";
 
-let userNameResult = {
-    isValid: false
-}
+const router = express.Router();
 
-let userPasswordResponse = {
-    userName: '',
-    silk: 0,
-    isSingIn: false,
-    description: '',
-    email: '',
-    secretQuestion: '',
-    secretAnswer: '',
-    password: ''
-}
-
-interface userDetails {
-    question: string,
-    answer: string
-}
-
-interface SilkFromUser {
-    silk_own: number
-}
-
-interface userResult {
-    StrUserID:string,
-    JID:number,
-    Email: string,
-    password:string
-}
-
-const router = express.Router()
-
-router.get('/getUserByName', async (req,res) => {
-
+router.get('/username-validation', async (req,res) => {
     await res.setHeader(
         'Content-Type',
         'application/json'
     );
-    const user = await findUserByName(req.query.username!.toString());
-    userNameResult.isValid = false
-
-    if (user) {
-        userNameResult.isValid = true
+    try {
+        const username = req.query.username!.toString();
+        const usernameValid = await AccountValidationsController(username);
+        await res.send(usernameValid);
+        await res.status(200);
+    } catch (error) {
+        SurvivalLogger.error(`[ERROR] Cannot validate user username: ${req.query.username!.toString()}, ${error.message}`);
+        res.status(500);
     }
-    await res.send(userNameResult);
-    await res.status(200);
 });
 
-router.get('/EmailByEmail', async (req,res) => {
+router.get('/email-validation', async (req,res) => {
+    try {
+        await res.setHeader(
+            'Content-Type',
+            'application/json'
+        );
+        const email = req.query.email!.toString();
+        const emailValid = await emailValidationsController(email);
+        await res.send(emailValid);
+        await res.status(200);
+    } catch (error) {
+        SurvivalLogger.error(`[ERROR] Cannot validate user email: ${req.query.email!.toString()}, ${error.message}`);
+        res.status(500);
+    }
+});
+
+router.get('/sing-in', async (req,res) => {
     await res.setHeader(
         'Content-Type',
         'application/json'
     );
-    const emailValid = await findUserByEmail(req.query.email!.toString());
-    await res.send({ isValid: emailValid !== undefined ? false : true });
-    await res.status(200);
+    const username = req.query.username!.toString();
+    const password = req.query.password!.toString();
+    try {
+        const loginResult = await loginUserController(username, password);
+        res.send(loginResult);
+        res.status(200);
+    } catch (error) {
+        SurvivalLogger.error(`[ERROR] Cannot process login to username:${username} and password:${password}, ${error.message}`);
+        res.status(500);
+    }
 });
 
-router.get('/UserByNamePassword', async (req,res) => {
-    await res.setHeader(
-        'Content-Type',
-        'application/json'
-    );
-    const user = await findUserByUsernamePassword(req.query.username!.toString(), req.query.password!.toString());
-
-    if (!user) {
-        userPasswordResponse.description = 'Usuario y contraseña incorrectos!'
-        userPasswordResponse.isSingIn = false
-    }
-    if (user) {
-        const { StrUserID, JID, Email, password }:userResult  = JSON.parse(JSON.stringify(user))
-        const silk = await findSilkById(JID)
-        const net2e = await findById(JID)
-        userPasswordResponse.userName = StrUserID
-        userPasswordResponse.isSingIn = true
-        userPasswordResponse.description = 'Sesion iniciada correctamente!'
-        userPasswordResponse.email = Email
-        userPasswordResponse.password = password
-
-        if (net2e) {
-            const { question, answer }: userDetails = JSON.parse(JSON.stringify(net2e))
-            userPasswordResponse.secretQuestion = question
-            userPasswordResponse.secretAnswer = answer
-        }
-
-        if (silk) {
-            const userSilk = JSON.parse(JSON.stringify(silk))
-            const silkRes: SilkFromUser = userSilk
-            console.log(silkRes)
-            console.log(silkRes.silk_own)
-            userPasswordResponse.silk = silkRes.silk_own
-        }
-    }
-    await res.send(userPasswordResponse);
-    await res.status(200);
-});
-
-router.post('/saveUser', async (req,res) => {
+router.post('/add-new-user', async (req,res) => {
 
     const schema = Joi.object({
         username: Joi.string().required(),
@@ -132,9 +82,10 @@ router.post('/saveUser', async (req,res) => {
             secretAnswer: secretAnswer!.toString()
         }
         await schema.validateAsync(data);
+
         if (Joi.isError(schema)) throw new Error('ALL_PARAMS_REQUIRED');
 
-        const userResult = await createUserController(data);
+        const userResult = await addNewUserController(data);
 
         if (userResult.username === username){
             res.send(userResult);
@@ -150,58 +101,41 @@ router.post('/saveUser', async (req,res) => {
     }
 });
 
-router.post('/EditAccount', async (req,res) => {
+router.post('/edit-account', async (req,res) => {
     try {
-        res.send(
-            await editUserAccount(req.query.username!.toString(), req.query.password!.toString(), req.query.email!.toString()))
+        const username = req.query.username!.toString();
+        const password = req.query.password!.toString();
+        const email = req.query.email!.toString();
+        res.send(await EditUserAccountController(username, password, email));
         res.status(200);
     }
-    catch (e) {
+    catch (error) {
+        SurvivalLogger.error(`[ERROR] Cannot edit user account to user ${req.query.username!.toString()}, ${error.message}`);
         res.status(500);
     }
 });
 
-router.get('/getUserLastUniqueKill', async (req, res) => {
+router.get('/get-load-information', async (req, res) => {
     try {
-        const lastKill = await lastUniqueKillController();
-        res.send(lastKill);
+        const loadInformation = await getLoadInformationController();
+        res.send(loadInformation);
+        res.status(200);
+        res.end();
     } catch (failure) {
-        console.log(failure);
+        SurvivalLogger.error(`[ERROR]: failed to get load data information web site! ${failure.message}`)
+        res.status(500);
     }
 });
 
 router.post('/add-silk-after-payment', async (req,res) => {
     try {
-        const user = await findUserByName(req.query.username!.toString())
-        console.log(`Init add silk after payment to user ${user}`)
-        if (user) {
-            const {JID}: userResult = JSON.parse(JSON.stringify(user))
-            const silk = await findSilkById(JID)
-            if (silk) {
-                const {silk_own}: SilkFromUser = JSON.parse(JSON.stringify(silk))
-                const silkQuantity = silk_own + parseInt(req.query.silkQuantity!.toString())
-                await updateSilk(JID, silkQuantity)
-            } else {
-                await createSilk(JID, parseInt(req.query.silkQuantity!.toString()))
-            }
-            console.log('payment success')
-            res.send(user);
-            res.status(200)
-            res.end();
-        }
-    }catch (failure) {
-        console.log(failure);
-        res.status(500);
-    }
-});
-
-router.get('/getQuantityUsersOnline', async (req, res) => {
-    try {
-        const usersOnline = await getUsersOnlineController();
-        res.send({ usersOnline: usersOnline });
+        const username = req.query.username!.toString();
+        const silkQuantity = req.query.silkQuantity!.toString();
+        await addSilkAfterPaymentController(username, silkQuantity);
         res.status(200);
+        res.end();
     } catch (failure) {
-        console.log(failure);
+        SurvivalLogger.error(`[ERROR] cannot add silk to users ${req.query.username!.toString()}!`);
         res.status(500);
     }
 });

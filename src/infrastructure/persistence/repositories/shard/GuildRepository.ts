@@ -4,7 +4,7 @@ export interface GuildRepository {
     getGuildOccupiedFortressByIds: (Id: number) => Promise<Guild | null>
 }
 
-export async function GuildRepository() : Promise<GuildRepository> {
+export function GuildRepository() : GuildRepository {
     return {
         getGuildOccupiedFortressByIds: async (Id: number) => await Guild.findOne({
             attributes: ['Name'],
@@ -12,3 +12,5 @@ export async function GuildRepository() : Promise<GuildRepository> {
         })
     };
 }
+
+export default GuildRepository();

@@ -1,72 +1,48 @@
 import express from 'express';
-import {executePayment, makeRequest, makeSubscription} from "../../../payment";
-import {findUserByName} from "../../persistence/repositories/shard/TB_UsersRepository";
-import {createSilk, findSilkById, updateSilk} from "../../persistence/repositories/shard/SilkRepository";
+import { executePayment, makeRequest, makeSubscription } from '../../../payment';
 import stripe from 'stripe';
 import mercadopago from 'mercadopago';
-
-interface userResult {
-    StrUserID:string,
-    JID:number,
-    Email: string,
-    password:string
-}
-
-interface SilkFromUser {
-    silk_own: number
-}
+import { addSilkAfterPaymentController } from '../../../controllers/users/add-silk-after-payment-controller';
+import SurvivalLogger from '../../observability/logging/logger';
 
 const router = express.Router()
 const apiKeyStripe = process.env.apiKeyStripe ?? ''
 const stripePayment = new stripe( apiKeyStripe, { apiVersion: '2020-08-27' })
 const tokenMP = process.env.ACCESS_TOKEN_MP ?? ''
 
-router.get('/createPaymentPaypal', async (req,res) => {
+router.get('/create-payment-paypal', async (req,res) => {
+    const amount = req.query.amount!.toString();
+    const username = req.query.username!.toString();
+    const silkQuantity = req.query.silkQuantity!.toString();
     try {
-        await makeRequest(
-            res,
-            makeSubscription(
-                parseInt(
-                    req.query.amount!.toString()),
-                req.query.silkQuantity!.toString(),
-                req.query.username!.toString()
-            )
-        )
+        SurvivalLogger.info(`Init intention to pay silk with PayPal from username: ${username} with amount: ${amount} and quantity silk: ${silkQuantity}`);
+        await makeRequest(res,makeSubscription(parseInt(amount), username, silkQuantity));
     }
     catch (e) {
-        console.log(e)
+        SurvivalLogger.error(`[ERROR] Cannot request intention pay from user: ${username} with amount: ${amount} and quantity silk: ${silkQuantity}`);
         res.status(500);
     }
 });
 
 router.get('/executePaymentPaypal', async (req,res) => {
     try {
-        const paymentSuccess = await executePayment(
-            res, req.query.token!.toString(),
-            req.query.silkQuantity!.toString()
-        )
+        const username = req.query.username!.toString();
+        const silkQuantity = req.query.silkQuantity!.toString();
+        const token = req.query.token!.toString();
+
+        SurvivalLogger.info(`Init process payment request for username ${username} with silk quantity:${silkQuantity}`);
+        const paymentSuccess = await executePayment(res, token, silkQuantity);
+
         if (paymentSuccess) {
-            const user = await findUserByName(req.query.username!.toString())
-            if (user){
-                const { JID }: userResult  = JSON.parse(JSON.stringify(user))
-                const silk = await findSilkById(JID)
-                if (silk) {
-                    const {silk_own}: SilkFromUser = JSON.parse(JSON.stringify(silk))
-                    const silkQuantity = silk_own + parseInt(req.query.silkQuantity!.toString())
-                    await updateSilk(JID, silkQuantity)
-                } else {
-                    await createSilk(JID, parseInt(req.query.silkQuantity!.toString()))
-                }
-                console.log('payment success')
-                res.writeHead( 301, {Location : 'http://survivalsro.com'})
-                res.end();
-            } else {
-                console.log('payment failed')
-                res.status(500);
-            }
+            await addSilkAfterPaymentController(username, silkQuantity);
+            SurvivalLogger.info(`Finish process payment request for username ${username} and silk quantity: ${silkQuantity}`);
+            res.writeHead( 301, {Location : 'https://survivalsro.com'})
+            res.end();
+        } else {
+            SurvivalLogger.error(`[ERROR] Cannot process payment to user: ${username} with silk: ${silkQuantity}`);
+            res.status(500);
         }
-    }
-    catch (e) {
+    } catch (e) {
         res.status(500);
     }
 });

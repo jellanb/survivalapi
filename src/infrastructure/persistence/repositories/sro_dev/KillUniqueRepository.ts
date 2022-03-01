@@ -5,7 +5,7 @@ export interface KillUniqueRepository {
     findLastKill: () => Promise<KillUnique[]>;
 }
 
-export default async function lastUniqueKillRepository(): Promise<KillUniqueRepository> {
+export function KillUniqueRepository(): KillUniqueRepository {
    return {
        findLastKill: async () => await KillUnique.findAll({
            where: { CharID : {[Op.not]: null} },
@@ -14,5 +14,7 @@ export default async function lastUniqueKillRepository(): Promise<KillUniqueRepo
        })
    }
 }
+
+export default KillUniqueRepository();
 
 

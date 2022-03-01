@@ -4,7 +4,7 @@ import OnlinePlayersRepository from '../../infrastructure/persistence/repositori
 
 export default async function getUsersOnlineController() {
     try {
-        return await getOnlinePlayers(await OnlinePlayersRepository());
+        return await getOnlinePlayers(await OnlinePlayersRepository);
     } catch (failure) {
         console.log(failure)
     }
