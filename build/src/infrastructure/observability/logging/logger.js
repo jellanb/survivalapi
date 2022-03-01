@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SurvivalLogger = void 0;
 const winston_1 = __importDefault(require("winston"));
 function SurvivalLogger() {
     const prefix = '[Survival-api]';
@@ -22,7 +23,7 @@ function SurvivalLogger() {
         debug: (messages) => logger.debug(`${prefix} ${processMessage(messages)}`)
     };
 }
-exports.default = SurvivalLogger;
+exports.SurvivalLogger = SurvivalLogger;
 function processMessage(msg) {
     if (msg instanceof Array) {
         return msg.join(' ');
@@ -35,3 +36,4 @@ function processMessage(msg) {
     }
     return msg;
 }
+exports.default = SurvivalLogger();

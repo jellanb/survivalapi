@@ -27,13 +27,14 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const cors_1 = __importDefault(require("cors"));
 const paymentRouters_1 = __importDefault(require("../../infrastructure/webserver/routes/paymentRouters"));
 const usersRouter_1 = __importDefault(require("../../infrastructure/webserver/routes/usersRouter"));
-const killsRouter_1 = __importDefault(require("../../infrastructure/webserver/routes/killsRouter"));
-const fortress_1 = __importDefault(require("../../infrastructure/webserver/routes/fortress"));
 const https = __importStar(require("https"));
 const fs = __importStar(require("fs"));
 const http = __importStar(require("http"));
 const logger_1 = __importDefault(require("../observability/logging/logger"));
+const config_1 = __importDefault(require("../../utils/config"));
 async function InitWebServer() {
+    const httpPort = process.env['http_port'];
+    const httpsPort = process.env['https_port'];
     const ssl = {
         key: fs.readFileSync('key.pem'),
         cert: fs.readFileSync('cert.pem')
@@ -41,21 +42,18 @@ async function InitWebServer() {
     const app = (0, express_1.default)();
     app.use((0, body_parser_1.default)());
     app.use((0, cors_1.default)({ origin: '*' }));
-    app.use('/fortress', fortress_1.default);
     app.use('/payment', paymentRouters_1.default);
     app.use('/users', usersRouter_1.default);
-    app.use('/job', killsRouter_1.default);
-    app.use('/unique', killsRouter_1.default);
     const httpsServer = https.createServer({
         key: ssl.key,
         cert: ssl.cert
     }, app);
     const httpServer = http.createServer(app);
-    await httpServer.listen(process.env['http_port'], () => {
-        (0, logger_1.default)().info(`app running on port ${process.env['http_port']} to http server`);
+    await httpServer.listen(httpPort, () => {
+        logger_1.default.info(`app running on port ${config_1.default.httpPort} to http server`);
     });
-    await httpsServer.listen(process.env["https_port"], () => {
-        (0, logger_1.default)().info(`app running on port ${process.env['https_port']} to https server`);
+    await httpsServer.listen(httpsPort, () => {
+        logger_1.default.info(`app running on port ${config_1.default.httpsPort} to https server`);
     });
 }
 exports.default = InitWebServer;

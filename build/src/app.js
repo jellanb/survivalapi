@@ -12,5 +12,5 @@ async function runApp() {
 }
 ;
 runApp()
-    .then(() => (0, logger_1.default)().info('App init successfully'))
-    .catch((failure) => (0, logger_1.default)().error(failure.message));
+    .then(() => logger_1.default.info('App init successfully'))
+    .catch((failure) => logger_1.default.error(failure.message));

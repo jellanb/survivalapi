@@ -56,21 +56,25 @@ exports.accountDB = new sequelize_1.Sequelize(accountConfig.database, accountCon
     host: accountConfig.host,
     dialect: 'mssql',
     port: 1433,
+    logging: false
 });
 exports.sroDevDB = new sequelize_1.Sequelize(sroDevConfig.database, sroDevConfig.user, sroDevConfig.password, {
     host: sroDevConfig.host,
     dialect: 'mssql',
     port: 1433,
+    logging: false
 });
 exports.shardDB = new sequelize_1.Sequelize(shardConfig.database, shardConfig.user, shardConfig.password, {
     host: sroDevConfig.host,
     dialect: 'mssql',
     port: 1433,
+    logging: false
 });
 exports.vPlusDB = new sequelize_1.Sequelize(vPlusConfig.database, vPlusConfig.user, vPlusConfig.password, {
     host: vPlusConfig.host,
     dialect: 'mssql',
     port: 1433,
+    logging: false
 });
 async function initDatabase() {
     try {
@@ -78,10 +82,10 @@ async function initDatabase() {
         await exports.sroDevDB.authenticate();
         await exports.shardDB.authenticate();
         await exports.vPlusDB.authenticate();
-        (0, logger_1.default)().info('All connection has been established successfully.');
+        logger_1.default.info('All connection has been established successfully.');
     }
     catch (connectionFailure) {
-        (0, logger_1.default)().error(`Unable to connect to the database: ${connectionFailure}`);
+        logger_1.default.error(`Unable to connect to the database: ${connectionFailure}`);
     }
 }
 exports.default = initDatabase;

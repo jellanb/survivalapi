@@ -10,19 +10,23 @@ Silk.init({
     Id: {
         primaryKey: true,
         type: sequelize_1.DataTypes.INTEGER,
-        field: 'JID'
+        field: 'JID',
+        allowNull: false
     },
     SilkOwn: {
         type: sequelize_1.DataTypes.INTEGER,
-        field: 'silk_own'
+        field: 'silk_own',
+        allowNull: false
     },
     SilkGift: {
         type: sequelize_1.DataTypes.INTEGER,
-        field: 'silk_gift'
+        field: 'silk_gift',
+        allowNull: false
     },
     silkPoint: {
         type: sequelize_1.DataTypes.INTEGER,
-        field: 'silk_point'
+        field: 'silk_point',
+        allowNull: false
     }
 }, {
     sequelize: moduleConnections_1.accountDB,

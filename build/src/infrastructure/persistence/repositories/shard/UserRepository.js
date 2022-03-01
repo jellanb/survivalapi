@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.UserShardRepository = void 0;
 const _User_1 = require("../../entities/shard/_User");
-async function UserRepository() {
+function UserShardRepository() {
     return {
         findUserById: async (charId) => await _User_1.UserAndChar.findAll({
             attributes: ['UserJID'],
@@ -9,4 +10,5 @@ async function UserRepository() {
         })
     };
 }
-exports.default = UserRepository;
+exports.UserShardRepository = UserShardRepository;
+exports.default = UserShardRepository();

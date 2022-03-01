@@ -22,7 +22,7 @@ router.get('/username-validation', async (req,res) => {
         await res.send(usernameValid);
         await res.status(200);
     } catch (error) {
-        SurvivalLogger.error(`[ERROR] Cannot validate user username: ${req.query.username!.toString()}, ${error.message}`);
+        SurvivalLogger.error(`[ERROR] Cannot validate user username: ${req.query.username!.toString()}, ${error}`);
         res.status(500);
     }
 });
@@ -38,7 +38,7 @@ router.get('/email-validation', async (req,res) => {
         await res.send(emailValid);
         await res.status(200);
     } catch (error) {
-        SurvivalLogger.error(`[ERROR] Cannot validate user email: ${req.query.email!.toString()}, ${error.message}`);
+        SurvivalLogger.error(`[ERROR] Cannot validate user email: ${req.query.email!.toString()}, ${error}`);
         res.status(500);
     }
 });
@@ -55,7 +55,7 @@ router.get('/sing-in', async (req,res) => {
         res.send(loginResult);
         res.status(200);
     } catch (error) {
-        SurvivalLogger.error(`[ERROR] Cannot process login to username:${username} and password:${password}, ${error.message}`);
+        SurvivalLogger.error(`[ERROR] Cannot process login to username:${username} and password:${password}, ${error}`);
         res.status(500);
     }
 });
@@ -110,7 +110,7 @@ router.post('/edit-account', async (req,res) => {
         res.status(200);
     }
     catch (error) {
-        SurvivalLogger.error(`[ERROR] Cannot edit user account to user ${req.query.username!.toString()}, ${error.message}`);
+        SurvivalLogger.error(`[ERROR] Cannot edit user account to user ${req.query.username!.toString()}, ${error}`);
         res.status(500);
     }
 });
@@ -122,7 +122,7 @@ router.get('/get-load-information', async (req, res) => {
         res.status(200);
         res.end();
     } catch (failure) {
-        SurvivalLogger.error(`[ERROR]: failed to get load data information web site! ${failure.message}`)
+        SurvivalLogger.error(`[ERROR]: failed to get load data information web site! ${failure}`)
         res.status(500);
     }
 });

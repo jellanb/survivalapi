@@ -7,7 +7,7 @@ const get_online_playes_1 = __importDefault(require("../../domain/usecase/get-on
 const OnlinePlayersRepository_1 = __importDefault(require("../../infrastructure/persistence/repositories/vplus/OnlinePlayersRepository"));
 async function getUsersOnlineController() {
     try {
-        return await (0, get_online_playes_1.default)(await (0, OnlinePlayersRepository_1.default)());
+        return await (0, get_online_playes_1.default)(await OnlinePlayersRepository_1.default);
     }
     catch (failure) {
         console.log(failure);

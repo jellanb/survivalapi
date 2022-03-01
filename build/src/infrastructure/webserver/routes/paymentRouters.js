@@ -5,47 +5,43 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 var _a, _b;
 const express_1 = __importDefault(require("express"));
 const payment_1 = require("../../../payment");
-const TB_UsersRepository_1 = require("../../persistence/repositories/shard/TB_UsersRepository");
-const SilkRepository_1 = require("../../persistence/repositories/shard/SilkRepository");
 const stripe_1 = __importDefault(require("stripe"));
 const mercadopago_1 = __importDefault(require("mercadopago"));
+const add_silk_after_payment_controller_1 = require("../../../controllers/users/add-silk-after-payment-controller");
+const logger_1 = __importDefault(require("../../observability/logging/logger"));
 const router = express_1.default.Router();
 const apiKeyStripe = (_a = process.env.apiKeyStripe) !== null && _a !== void 0 ? _a : '';
 const stripePayment = new stripe_1.default(apiKeyStripe, { apiVersion: '2020-08-27' });
 const tokenMP = (_b = process.env.ACCESS_TOKEN_MP) !== null && _b !== void 0 ? _b : '';
-router.get('/createPaymentPaypal', async (req, res) => {
+router.get('/create-payment-paypal', async (req, res) => {
+    const amount = req.query.amount.toString();
+    const username = req.query.username.toString();
+    const silkQuantity = req.query.silkQuantity.toString();
     try {
-        await (0, payment_1.makeRequest)(res, (0, payment_1.makeSubscription)(parseInt(req.query.amount.toString()), req.query.silkQuantity.toString(), req.query.username.toString()));
+        logger_1.default.info(`Init intention to pay silk with PayPal from username: ${username} with amount: ${amount} and quantity silk: ${silkQuantity}`);
+        await (0, payment_1.makeRequest)(res, (0, payment_1.makeSubscription)(parseInt(amount), username, silkQuantity));
     }
     catch (e) {
-        console.log(e);
+        logger_1.default.error(`[ERROR] Cannot request intention pay from user: ${username} with amount: ${amount} and quantity silk: ${silkQuantity}`);
         res.status(500);
     }
 });
 router.get('/executePaymentPaypal', async (req, res) => {
     try {
-        const paymentSuccess = await (0, payment_1.executePayment)(res, req.query.token.toString(), req.query.silkQuantity.toString());
+        const username = req.query.username.toString();
+        const silkQuantity = req.query.silkQuantity.toString();
+        const token = req.query.token.toString();
+        logger_1.default.info(`Init process payment request for username ${username} with silk quantity:${silkQuantity}`);
+        const paymentSuccess = await (0, payment_1.executePayment)(res, token, silkQuantity);
         if (paymentSuccess) {
-            const user = await (0, TB_UsersRepository_1.findUserByName)(req.query.username.toString());
-            if (user) {
-                const { JID } = JSON.parse(JSON.stringify(user));
-                const silk = await (0, SilkRepository_1.findSilkById)(JID);
-                if (silk) {
-                    const { silk_own } = JSON.parse(JSON.stringify(silk));
-                    const silkQuantity = silk_own + parseInt(req.query.silkQuantity.toString());
-                    await (0, SilkRepository_1.updateSilk)(JID, silkQuantity);
-                }
-                else {
-                    await (0, SilkRepository_1.createSilk)(JID, parseInt(req.query.silkQuantity.toString()));
-                }
-                console.log('payment success');
-                res.writeHead(301, { Location: 'http://survivalsro.com' });
-                res.end();
-            }
-            else {
-                console.log('payment failed');
-                res.status(500);
-            }
+            await (0, add_silk_after_payment_controller_1.addSilkAfterPaymentController)(username, silkQuantity);
+            logger_1.default.info(`Finish process payment request for username ${username} and silk quantity: ${silkQuantity}`);
+            res.writeHead(301, { Location: 'https://survivalsro.com' });
+            res.end();
+        }
+        else {
+            logger_1.default.error(`[ERROR] Cannot process payment to user: ${username} with silk: ${silkQuantity}`);
+            res.status(500);
         }
     }
     catch (e) {
