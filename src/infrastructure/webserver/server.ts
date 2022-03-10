@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import paymentRouter from '../../infrastructure/webserver/routes/paymentRouters';
 import usersRouter from '../../infrastructure/webserver/routes/usersRouter';
+import metrics from '../../infrastructure/webserver/routes/metrics';
 import * as https from 'https';
 import * as fs from 'fs';
 import * as http from 'http';
@@ -22,6 +23,7 @@ export default async function InitWebServer(){
     app.use(cors({origin: '*'}));
     app.use('/payment', paymentRouter);
     app.use('/users', usersRouter);
+    app.use('/survival-api', metrics)
 
     const httpsServer = https.createServer({
         key: ssl.key,

@@ -5,7 +5,9 @@ import { UserShardRepository } from '../../infrastructure/persistence/repositori
 import { CharRepository } from '../../infrastructure/persistence/repositories/shard/_ShardRepository';
 import { GuildRepository }  from '../../infrastructure/persistence/repositories/shard/GuildRepository';
 import { SiegeFortressRepository } from '../../infrastructure/persistence/repositories/shard/SiegeFortressRepository';
-import SurvivalLogger from "../../infrastructure/observability/logging/logger";
+import SurvivalLogger from '../../infrastructure/observability/logging/logger';
+import { MetricsClient } from '../../infrastructure/metrics/prometheus-client';
+import { METRICS_TO_COLLECT } from '../../infrastructure/metrics/metric-collect';
 
 export async function getLoadInformation(
     userRepository: UserRepository,
@@ -14,8 +16,10 @@ export async function getLoadInformation(
     userShardRepository: UserShardRepository,
     charRepository: CharRepository,
     guildRepository: GuildRepository,
-    siegeFortressRepository: SiegeFortressRepository
+    siegeFortressRepository: SiegeFortressRepository,
+    handlerMetrics: MetricsClient
 ){
+    const { userVisitWebSite } = METRICS_TO_COLLECT;
     SurvivalLogger.info('Init load information to load web site');
     SurvivalLogger.info('Getting amount user online');
     const usersQuantityOnline = await onlinePlayersRepository.getQuantityUsersOn();
@@ -69,6 +73,20 @@ export async function getLoadInformation(
             guildName: 'Not Occupied'
         })
     }
+
+    const labelValues = {
+        web_site: 1,
+        payment: 0,
+        document_type: 0,
+        error_code: '',
+        source: ''
+    }
+    handlerMetrics.incrementMetric({
+        metricName: userVisitWebSite.name,
+        labelValues,
+        incrementValue: 1
+    })
+
     return {
         usersOnline: usersQuantityOnline,
         usernameLastUniqueKill: username[0],
