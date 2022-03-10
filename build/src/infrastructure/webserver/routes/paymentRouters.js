@@ -19,7 +19,7 @@ router.get('/create-payment-paypal', async (req, res) => {
     const silkQuantity = req.query.silkQuantity.toString();
     try {
         logger_1.default.info(`Init intention to pay silk with PayPal from username: ${username} with amount: ${amount} and quantity silk: ${silkQuantity}`);
-        await (0, payment_1.makeRequest)(res, (0, payment_1.makeSubscription)(parseInt(amount), username, silkQuantity));
+        await (0, payment_1.makeRequest)(res, (0, payment_1.makeSubscription)(parseInt(amount), silkQuantity, username));
     }
     catch (e) {
         logger_1.default.error(`[ERROR] Cannot request intention pay from user: ${username} with amount: ${amount} and quantity silk: ${silkQuantity}`);

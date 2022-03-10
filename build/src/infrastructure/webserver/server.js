@@ -27,6 +27,7 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const cors_1 = __importDefault(require("cors"));
 const paymentRouters_1 = __importDefault(require("../../infrastructure/webserver/routes/paymentRouters"));
 const usersRouter_1 = __importDefault(require("../../infrastructure/webserver/routes/usersRouter"));
+const metrics_1 = __importDefault(require("../../infrastructure/webserver/routes/metrics"));
 const https = __importStar(require("https"));
 const fs = __importStar(require("fs"));
 const http = __importStar(require("http"));
@@ -44,6 +45,7 @@ async function InitWebServer() {
     app.use((0, cors_1.default)({ origin: '*' }));
     app.use('/payment', paymentRouters_1.default);
     app.use('/users', usersRouter_1.default);
+    app.use('/survival-api', metrics_1.default);
     const httpsServer = https.createServer({
         key: ssl.key,
         cert: ssl.cert

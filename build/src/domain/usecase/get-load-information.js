@@ -12,8 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getLoadInformation = void 0;
 const logger_1 = __importDefault(require("../../infrastructure/observability/logging/logger"));
-async function getLoadInformation(userRepository, onlinePlayersRepository, uniqueKillRepository, userShardRepository, charRepository, guildRepository, siegeFortressRepository) {
+const metric_collect_1 = require("../../infrastructure/metrics/metric-collect");
+async function getLoadInformation(userRepository, onlinePlayersRepository, uniqueKillRepository, userShardRepository, charRepository, guildRepository, siegeFortressRepository, handlerMetrics) {
     var e_1, _a;
+    const { userVisitWebSite } = metric_collect_1.METRICS_TO_COLLECT;
     logger_1.default.info('Init load information to load web site');
     logger_1.default.info('Getting amount user online');
     const usersQuantityOnline = await onlinePlayersRepository.getQuantityUsersOn();
@@ -73,6 +75,18 @@ async function getLoadInformation(userRepository, onlinePlayersRepository, uniqu
             guildName: 'Not Occupied'
         });
     }
+    const labelValues = {
+        web_site: 1,
+        payment: 0,
+        document_type: 0,
+        error_code: '',
+        source: ''
+    };
+    handlerMetrics.incrementMetric({
+        metricName: userVisitWebSite.name,
+        labelValues,
+        incrementValue: 1
+    });
     return {
         usersOnline: usersQuantityOnline,
         usernameLastUniqueKill: username[0],

@@ -12,7 +12,8 @@ const GuildRepository_1 = __importDefault(require("../../infrastructure/persiste
 const SiegeFortressRepository_1 = __importDefault(require("../../infrastructure/persistence/repositories/shard/SiegeFortressRepository"));
 const get_load_information_1 = require("../../domain/usecase/get-load-information");
 const OnlinePlayersRepository_1 = __importDefault(require("../../infrastructure/persistence/repositories/vplus/OnlinePlayersRepository"));
+const metrics_1 = require("../../infrastructure/metrics");
 function getLoadInformationController() {
-    return (0, get_load_information_1.getLoadInformation)(TB_UsersRepository_1.default, OnlinePlayersRepository_1.default, KillUniqueRepository_1.default, UserRepository_1.default, _ShardRepository_1.default, GuildRepository_1.default, SiegeFortressRepository_1.default);
+    return (0, get_load_information_1.getLoadInformation)(TB_UsersRepository_1.default, OnlinePlayersRepository_1.default, KillUniqueRepository_1.default, UserRepository_1.default, _ShardRepository_1.default, GuildRepository_1.default, SiegeFortressRepository_1.default, metrics_1.handlerMetrics);
 }
 exports.getLoadInformationController = getLoadInformationController;

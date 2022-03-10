@@ -5,10 +5,6 @@ import SilkRepository from '../../infrastructure/persistence/repositories/shard/
 
 
 export const addSilkAfterPaymentController = async (username: string, silkPay: string) => {
-    try {
+    //TODO: handler error in this section
         return await AddSilkToUser(username, silkPay, UserRepository, SilkRepository);
-    }catch (e) {
-        console.log(e.message)
-    }
-
 }
