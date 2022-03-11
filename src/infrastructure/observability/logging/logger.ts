@@ -1,7 +1,7 @@
 import winston from 'winston'
 
 
-interface SurvivalLogger {
+export interface SurvivalLogger {
     error: (messages: [] | Object | null | string) => winston.Logger;
     warn: (messages: [] | Object | null | string) => winston.Logger;
     info: (messages: [] | Object | null | string) => winston.Logger;

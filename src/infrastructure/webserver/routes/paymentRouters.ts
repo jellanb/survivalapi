@@ -4,6 +4,8 @@ import stripe from 'stripe';
 import mercadopago from 'mercadopago';
 import { addSilkAfterPaymentController } from '../../../controllers/users/add-silk-after-payment-controller';
 import SurvivalLogger from '../../observability/logging/logger';
+import UserOrderPayController from "../../../controllers/users/user-order-pay.controller";
+import ExecuteOrderPaymentController from "../../../domain/usecase/execute-order-payment.controller";
 
 const router = express.Router()
 const apiKeyStripe = process.env.apiKeyStripe ?? ''
@@ -15,8 +17,7 @@ router.get('/create-payment-paypal', async (req,res) => {
     const username = req.query.username!.toString();
     const silkQuantity = req.query.silkQuantity!.toString();
     try {
-        SurvivalLogger.info(`Init intention to pay silk with PayPal from username: ${username} with amount: ${amount} and quantity silk: ${silkQuantity}`);
-        await makeRequest(res,makeSubscription(parseInt(amount), silkQuantity, username));
+        res.send(await UserOrderPayController(username, amount, silkQuantity));
     }
     catch (e) {
         SurvivalLogger.error(`[ERROR] Cannot request intention pay from user: ${username} with amount: ${amount} and quantity silk: ${silkQuantity}`);
@@ -31,9 +32,11 @@ router.get('/executePaymentPaypal', async (req,res) => {
         const token = req.query.token!.toString();
 
         SurvivalLogger.info(`Init process payment request for username ${username} with silk quantity:${silkQuantity}`);
-        const paymentSuccess = await executePayment(res, token, silkQuantity);
+        return await ExecuteOrderPaymentController(username, silkQuantity, token);
+        SurvivalLogger.info(`Finish process payment request for username ${username} and silk quantity: ${silkQuantity}`);
+        //const paymentSuccess = await executePayment(res, token, silkQuantity);
 
-        if (paymentSuccess) {
+        /*if (paymentSuccess) {
             await addSilkAfterPaymentController(username, silkQuantity);
             SurvivalLogger.info(`Finish process payment request for username ${username} and silk quantity: ${silkQuantity}`);
             res.writeHead( 301, {Location : 'https://survivalsro.com'})
@@ -41,7 +44,7 @@ router.get('/executePaymentPaypal', async (req,res) => {
         } else {
             SurvivalLogger.error(`[ERROR] Cannot process payment to user: ${username} with silk: ${silkQuantity}`);
             res.status(500);
-        }
+        }*/
     } catch (e) {
         res.status(500);
     }

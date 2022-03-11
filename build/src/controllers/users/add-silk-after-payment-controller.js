@@ -8,11 +8,7 @@ const add_silk_after_payment_1 = __importDefault(require("../../domain/usecase/a
 const TB_UsersRepository_1 = __importDefault(require("../../infrastructure/persistence/repositories/shard/TB_UsersRepository"));
 const SilkRepository_1 = __importDefault(require("../../infrastructure/persistence/repositories/shard/SilkRepository"));
 const addSilkAfterPaymentController = async (username, silkPay) => {
-    try {
-        return await (0, add_silk_after_payment_1.default)(username, silkPay, TB_UsersRepository_1.default, SilkRepository_1.default);
-    }
-    catch (e) {
-        console.log(e.message);
-    }
+    //TODO: handler error in this section
+    return await (0, add_silk_after_payment_1.default)(username, silkPay, TB_UsersRepository_1.default, SilkRepository_1.default);
 };
 exports.addSilkAfterPaymentController = addSilkAfterPaymentController;
