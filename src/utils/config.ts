@@ -38,7 +38,7 @@ export = {
     paypalSecret,
     paypalUrl,
     mercadoPagoAccessToken,
-    logLevel
+    logLevel,
 }
 
 

@@ -8,6 +8,8 @@ import { SiegeFortressRepository } from '../../infrastructure/persistence/reposi
 import SurvivalLogger from '../../infrastructure/observability/logging/logger';
 import { MetricsClient } from '../../infrastructure/metrics/prometheus-client';
 import { METRICS_TO_COLLECT } from '../../infrastructure/metrics/metric-collect';
+import {_ScheduleRepository} from '../../infrastructure/persistence/repositories/shard/_ScheduleRepository';
+import {getSystemTime} from '../../infrastructure/persistence/connectionManager/moduleConnections';
 
 export async function getLoadInformation(
     userRepository: UserRepository,
@@ -17,6 +19,7 @@ export async function getLoadInformation(
     charRepository: CharRepository,
     guildRepository: GuildRepository,
     siegeFortressRepository: SiegeFortressRepository,
+    scheduleRepository: _ScheduleRepository,
     handlerMetrics: MetricsClient
 ){
     const { userVisitWebSite } = METRICS_TO_COLLECT;
@@ -50,6 +53,18 @@ export async function getLoadInformation(
     }
     SurvivalLogger.info(`Finish find guilds name occupied fortress`);
 
+    const scheduleCaptureFlag = await scheduleRepository.findById(12);
+    const currentTime = new Date()
+    console.log(scheduleCaptureFlag.map((schedule) => schedule.getDataValue('SubInterval_StartTimeHour')))
+
+    const arr = scheduleCaptureFlag.map((schedule) => schedule.getDataValue('SubInterval_StartTimeHour'))
+    const goal = currentTime.getHours()
+    console.log(goal)
+    const nextCaptureFlagTime = arr.reduce((prev, curr) => {
+        return (Math.round(curr - goal) < Math.round(prev - goal) ? curr : prev);
+    });
+    console.log(nextCaptureFlagTime)
+
 
     if (fortressInfo.length === 0){
         return [
@@ -79,7 +94,7 @@ export async function getLoadInformation(
         payment: 0,
         document_type: 0,
         error_code: '',
-        source: ''
+        source: '',
     }
     handlerMetrics.incrementMetric({
         metricName: userVisitWebSite.name,
@@ -90,7 +105,9 @@ export async function getLoadInformation(
     return {
         usersOnline: usersQuantityOnline,
         usernameLastUniqueKill: username[0],
-        fortressInfo: fortressInfo
+        fortressInfo: fortressInfo,
+        nextCaptureFlagTime: nextCaptureFlagTime,
+        serverTime: await getSystemTime()
     }
 }
 

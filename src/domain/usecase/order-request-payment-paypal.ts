@@ -51,5 +51,6 @@ export default async function OrderRequestPaymentPaypal(
 
     if (!paymentRequestApprove) throw Error(`[ERROR] Payment request cannot process!`);
     logger.info(`Finish intention to pay silk with PayPal from username: ${username} with amount: ${amount} and quantity silk: ${silkQuantity}`);
+
     return paymentRequestApprove;
 }

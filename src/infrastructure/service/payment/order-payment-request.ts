@@ -1,5 +1,6 @@
-import request from "request";
+import request from "request-promise";
 import config from "../../../utils/config";
+import axios, {AxiosResponse} from 'axios'
 
 interface paypalOrderCreated {
     data: data
@@ -36,22 +37,20 @@ interface ApplicationContext {
     cancel_url: string
 }
 export interface OrderPaymentRequest {
-    executedRequestPayment: (subscription: Subscription) => request.Request
+    executedRequestPayment: (subscription: Subscription) =>  Promise<any>
 }
 
 const auth = { user: `${config.paypalClientId}`, pass: `${config.paypalSecret}` }
 
 export function OrderPaymentRequest(): OrderPaymentRequest {
         return {
-            executedRequestPayment: (subscription: Subscription) => {
-                return request.post(`${config.paypalUrl}/v2/checkout/orders`, {
+            executedRequestPayment: async (subscription: Subscription) => {
+                const req = await request.post(`${config.paypalUrl}/v2/checkout/orders`, {
                     auth,
                     body: subscription,
                     json: true
-                }, async (err, response) => {
-                    const result: paypalOrderCreated = {data: response.body};
-                    return result.data.links.find((link) => link.rel === 'approve');
                 })
+                return req.links.find((link: links) => link.rel === 'approve');
             }
         }
 }

@@ -6,7 +6,8 @@ import GuildRepository  from '../../infrastructure/persistence/repositories/shar
 import SiegeFortressRepository from '../../infrastructure/persistence/repositories/shard/SiegeFortressRepository';
 import { getLoadInformation } from '../../domain/usecase/get-load-information';
 import OnlinePlayersRepository from '../../infrastructure/persistence/repositories/vplus/OnlinePlayersRepository';
-import {handlerMetrics} from "../../infrastructure/metrics";
+import {handlerMetrics} from '../../infrastructure/metrics';
+import _ScheduleRepository from '../../infrastructure/persistence/repositories/shard/_ScheduleRepository';
 
 export function getLoadInformationController() {
         return getLoadInformation(
@@ -17,7 +18,8 @@ export function getLoadInformationController() {
             CharRepository,
             GuildRepository,
             SiegeFortressRepository,
-            handlerMetrics
+            _ScheduleRepository,
+            handlerMetrics,
         );
 }
 

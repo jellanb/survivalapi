@@ -90,3 +90,8 @@ export default async function initDatabase() {
         SurvivalLogger.error(`Unable to connect to the database: ${connectionFailure}`)
     }
 }
+
+export async function getSystemTime() {
+    const system = await vPlusDB.query('SELECT SYSDATETIME() AS TIME')
+    return system[0]
+}

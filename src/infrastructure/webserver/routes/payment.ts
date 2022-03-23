@@ -1,8 +1,6 @@
 import express from 'express';
-import { executePayment, makeRequest, makeSubscription } from '../../../payment';
 import stripe from 'stripe';
 import mercadopago from 'mercadopago';
-import { addSilkAfterPaymentController } from '../../../controllers/users/add-silk-after-payment-controller';
 import SurvivalLogger from '../../observability/logging/logger';
 import UserOrderPayController from "../../../controllers/users/user-order-pay.controller";
 import ExecuteOrderPaymentController from "../../../domain/usecase/execute-order-payment.controller";
@@ -26,26 +24,20 @@ router.get('/create-payment-paypal', async (req,res) => {
 });
 
 router.get('/executePaymentPaypal', async (req,res) => {
+    const username = req.query.username!.toString();
+    const silkQuantity = req.query.silkQuantity!.toString();
+    const token = req.query.token!.toString();
+
     try {
-        const username = req.query.username!.toString();
-        const silkQuantity = req.query.silkQuantity!.toString();
-        const token = req.query.token!.toString();
-
         SurvivalLogger.info(`Init process payment request for username ${username} with silk quantity:${silkQuantity}`);
-        return await ExecuteOrderPaymentController(username, silkQuantity, token);
-        SurvivalLogger.info(`Finish process payment request for username ${username} and silk quantity: ${silkQuantity}`);
-        //const paymentSuccess = await executePayment(res, token, silkQuantity);
-
-        /*if (paymentSuccess) {
-            await addSilkAfterPaymentController(username, silkQuantity);
-            SurvivalLogger.info(`Finish process payment request for username ${username} and silk quantity: ${silkQuantity}`);
+        const paymentResult =  await ExecuteOrderPaymentController(username, silkQuantity, token);
+        if (paymentResult!.state === 'success') {
             res.writeHead( 301, {Location : 'https://survivalsro.com'})
             res.end();
-        } else {
-            SurvivalLogger.error(`[ERROR] Cannot process payment to user: ${username} with silk: ${silkQuantity}`);
-            res.status(500);
-        }*/
+        }
+        SurvivalLogger.info(`Finish process payment request for username ${username} and silk quantity: ${silkQuantity}`);
     } catch (e) {
+        SurvivalLogger.error(`[ERROR] Cannot process payment to user: ${username} with silk: ${silkQuantity}`);
         res.status(500);
     }
 });
