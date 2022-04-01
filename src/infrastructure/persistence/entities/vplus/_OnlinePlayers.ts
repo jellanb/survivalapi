@@ -18,7 +18,8 @@ OnlinePlayers.init({
     },
     id: {
         type: DataTypes.INTEGER,
-        field: 'UniqueID'
+        field: 'UniqueID',
+        primaryKey: true
     },
     jobType:{
         type: DataTypes.INTEGER,
@@ -79,7 +80,7 @@ OnlinePlayers.init({
 }, {
     sequelize: vPlusDB,
     freezeTableName: true,
-    tableName: '_KillerUniqueLog',
+    tableName: '_OnlinePlayers',
     createdAt: false,
     updatedAt: false
 })

@@ -10,6 +10,7 @@ import {editUserAccount} from "../../../domain/usecase/edit-user-account";
 import {createUserController} from "../../../controllers/users/createUserController";
 import Joi from "joi";
 import lastUniqueKillController from "../../../controllers/users/lastUniqueKillController";
+import getUsersOnlineController from "../../../controllers/users/get-users-online-controller";
 
 let userNameResult = {
     isValid: false
@@ -167,7 +168,7 @@ router.get('/getUserLastUniqueKill', async (req, res) => {
     } catch (failure) {
         console.log(failure);
     }
-})
+});
 
 router.post('/add-silk-after-payment', async (req,res) => {
     try {
@@ -191,6 +192,17 @@ router.post('/add-silk-after-payment', async (req,res) => {
         console.log(failure);
         res.status(500);
     }
-})
+});
+
+router.get('/getQuantityUsersOnline', async (req, res) => {
+    try {
+        const usersOnline = await getUsersOnlineController();
+        res.send({ usersOnline: usersOnline });
+        res.status(200);
+    } catch (failure) {
+        console.log(failure);
+        res.status(500);
+    }
+});
 
 export = router

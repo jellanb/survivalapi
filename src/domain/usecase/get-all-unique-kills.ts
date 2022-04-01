@@ -1,5 +1,5 @@
 import { findAllUniqueKills } from '../../infrastructure/persistence/repositories/shard/UniqueRankingRepository';
-import {UniqueRanking} from "../../infrastructure/persistence/entities/shard/UniqueRanking";
+import { UniqueRanking } from "../../infrastructure/persistence/entities/shard/UniqueRanking";
 
 export default async function getAllUniqueKills() {
 

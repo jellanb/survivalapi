@@ -4,7 +4,7 @@ export interface OnlinePlayersRepository {
     getQuantityUsersOn: () => Promise<Number>;
 }
 
-export default async function onlinePlayersRepository(): Promise<OnlinePlayersRepository> {
+export default async function OnlinePlayersRepository(): Promise<OnlinePlayersRepository> {
     return {
         getQuantityUsersOn: async () => await OnlinePlayers.count()
     }
