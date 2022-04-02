@@ -1,10 +1,10 @@
 import { UserAndChar } from "../../entities/shard/_User";
 
-export interface UserRepository{
+export interface UserShardRepository{
     findUserById: (charId: number) => Promise<UserAndChar[] | null>
 }
 
-export default async function UserRepository(): Promise<UserRepository> {
+export function UserShardRepository(): UserShardRepository {
     return {
         findUserById: async (charId: number) => await UserAndChar.findAll({
             attributes: ['UserJID'],
@@ -12,3 +12,5 @@ export default async function UserRepository(): Promise<UserRepository> {
         })
     };
 }
+
+export default UserShardRepository();

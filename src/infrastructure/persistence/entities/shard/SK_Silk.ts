@@ -7,19 +7,23 @@ Silk.init({
     Id:{
         primaryKey: true,
         type: DataTypes.INTEGER,
-        field: 'JID'
+        field: 'JID',
+        allowNull: false
     },
     SilkOwn:{
         type: DataTypes.INTEGER,
-        field: 'silk_own'
+        field: 'silk_own',
+        allowNull: false
     },
     SilkGift:{
         type: DataTypes.INTEGER,
-        field: 'silk_gift'
+        field: 'silk_gift',
+        allowNull: false
     },
     silkPoint:{
         type: DataTypes.INTEGER,
-        field: 'silk_point'
+        field: 'silk_point',
+        allowNull: false
     }
 },
     {

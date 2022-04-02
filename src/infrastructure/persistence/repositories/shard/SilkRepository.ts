@@ -1,44 +1,41 @@
 import { Silk } from '../../entities/shard/SK_Silk'
 
-
-export const findSilkById = async (id: number) => {
-        const silkFromUser = await Silk.findAll({
-            attributes: ['silk_own'],
-            where: { Id: id }
-        });
-
-        return silkFromUser[0]
+export interface SilkRepository {
+    findById: (id: number) => Promise<Silk>,
+    add: (userId: number, silkQuantity: number) => Promise<Silk | undefined>,
+    update: (userId: number, silkQuantity: number) => Promise<[number, Silk[]] | undefined>
 }
 
-export const createSilk = async (userID: number, silkQuantity: number) => {
-    try {
-        const newSilk = await Silk.create({
-            Id: userID,
-            SilkOwn: silkQuantity,
-            SilkGift: 0,
-            SilkPoint: 0
-        })
-        console.log(newSilk)
-        console.log('Silk add successfully!')
-        return newSilk
-    } catch (error) {
-        console.log(error)
+export function SilkRepository(): SilkRepository {
+    return {
+        findById: async (id: number) => {
+            const silkFromUser = await Silk.findAll({
+                attributes: ['silk_own'],
+                where: { Id: id }
+            });
+            return silkFromUser[0]
+        },
+        add: async (userId: number, silkQuantity: number) => {
+                const newSilk = await Silk.create({
+                    Id: userId,
+                    SilkOwn: silkQuantity,
+                    SilkGift: 0,
+                    silkPoint: 0
+                })
+                return newSilk
+        },
+        update: async (userId: number, silkQuantity: number) => {
+                const updateSilk = await Silk.update({
+                    Id: userId,
+                    SilkOwn: silkQuantity,
+                    SilkGift: 0,
+                    silkPoint: 0
+                }, {
+                    where: { JID: userId }
+                })
+                return updateSilk
+        }
     }
 }
 
-export const updateSilk = async (userID: number, silkQuantity: number) => {
-    try {
-        const updateSilk = await Silk.update({
-            Id: userID,
-            SilkOwn: silkQuantity,
-            SilkGift: 0,
-            silkPoint: 0
-        }, {
-            where: { JID: userID }
-        })
-        console.log('silk update successfully!')
-        return updateSilk
-    } catch (error) {
-        console.log(error)
-    }
-}
+export default SilkRepository();

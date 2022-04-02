@@ -1,5 +1,6 @@
 import {Sequelize} from "sequelize";
 import dotenv from 'dotenv';
+import SurvivalLogger from "../../observability/logging/logger";
 dotenv.config();
 
 const accountConfig = {
@@ -54,24 +55,28 @@ export const accountDB = new Sequelize(accountConfig.database, accountConfig.use
     host: accountConfig.host,
     dialect: 'mssql',
     port: 1433,
+    logging: false
 });
 
 export const sroDevDB = new Sequelize(sroDevConfig.database, sroDevConfig.user, sroDevConfig.password, {
     host: sroDevConfig.host,
     dialect: 'mssql',
     port: 1433,
+    logging: false
 });
 
 export const shardDB = new Sequelize(shardConfig.database, shardConfig.user, shardConfig.password, {
     host: sroDevConfig.host,
     dialect: 'mssql',
     port: 1433,
+    logging: false
 });
 
 export const vPlusDB = new Sequelize(vPlusConfig.database, vPlusConfig.user, vPlusConfig.password, {
     host: vPlusConfig.host,
     dialect: 'mssql',
     port: 1433,
+    logging: false
 });
 
 export default async function initDatabase() {
@@ -80,8 +85,13 @@ export default async function initDatabase() {
         await sroDevDB.authenticate();
         await shardDB.authenticate();
         await vPlusDB.authenticate();
-        console.log('All connection has been established successfully.');
+        SurvivalLogger.info('All connection has been established successfully.');
     } catch (connectionFailure) {
-        console.log(`Unable to connect to the database: ${connectionFailure}`);
+        SurvivalLogger.error(`Unable to connect to the database: ${connectionFailure}`)
     }
+}
+
+export async function getSystemTime() {
+    const system = await vPlusDB.query('SELECT SYSDATETIME() AS TIME')
+    return system[0]
 }

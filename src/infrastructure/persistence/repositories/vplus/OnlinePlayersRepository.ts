@@ -1,11 +1,12 @@
-import { OnlinePlayers } from '../../entities/vplus/_OnlinePlayers'
+import { OnlinePlayers } from '../../entities/vplus/_OnlinePlayers';
 
 export interface OnlinePlayersRepository {
-    getQuantityUsersOn: () => Promise<Number>;
+    getQuantityUsersOn: () => Promise<number>
 }
-
-export default async function OnlinePlayersRepository(): Promise<OnlinePlayersRepository> {
+export function OnlinePlayersRepository(): OnlinePlayersRepository {
     return {
         getQuantityUsersOn: async () => await OnlinePlayers.count()
     }
 }
+
+export default OnlinePlayersRepository();
