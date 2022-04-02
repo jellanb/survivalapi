@@ -6,7 +6,7 @@ export interface SiegeFortressRepository {
     getAllGuildOccupiedFortress: () => Promise<SiegeFortress[] | null>
 }
 
-export async function SiegeFortressRepository(): Promise<SiegeFortressRepository> {
+export function SiegeFortressRepository(): SiegeFortressRepository {
     return {
         getAllGuildOccupiedFortress: async () => await SiegeFortress.findAll({
             attributes: ['FortressID','GuildID'],
@@ -14,3 +14,5 @@ export async function SiegeFortressRepository(): Promise<SiegeFortressRepository
         })
     }
 }
+
+export default SiegeFortressRepository();

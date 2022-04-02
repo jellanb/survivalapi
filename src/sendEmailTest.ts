@@ -1,4 +1,6 @@
 import nodemailer from 'nodemailer'
+//gmail services, markdownd
+
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',

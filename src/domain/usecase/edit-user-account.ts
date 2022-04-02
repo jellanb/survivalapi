@@ -1,16 +1,11 @@
-import { findUserByName, updateUserById } from '../../infrastructure/persistence/repositories/shard/TB_UsersRepository'
-import { updateNet2eById } from '../../infrastructure/persistence/repositories/shard/Net2eRepository'
+import { Net2eRepository } from '../../infrastructure/persistence/repositories/shard/Net2eRepository'
+import { UserRepository } from '../../infrastructure/persistence/repositories/shard/TB_UsersRepository'
 
-export const editUserAccount = async (username: string, password: string, email: string) => {
-    try {
-        const user = await findUserByName(username)
-        const { JID, } = JSON.parse(JSON.stringify(user))
+export const editUserAccount = async (username: string, password: string, email: string, nNet2eRepository: Net2eRepository, userRepository: UserRepository) => {
+    const user = await userRepository.findUserByName(username);
+    const { JID, } = JSON.parse(JSON.stringify(user));
 
-        await updateUserById(JID, password, email)
-        await updateNet2eById(JID, password)
-        return { username, password, email }
-    } catch (e) {
-        console.log(e)
-    }
-
+    await userRepository.updateUserById(JID, password, email);
+    await nNet2eRepository.update(JID, password);
+    return { username, password, email };
 }
