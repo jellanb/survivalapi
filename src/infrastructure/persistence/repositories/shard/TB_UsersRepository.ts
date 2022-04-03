@@ -5,7 +5,7 @@ export interface UserRepository {
         findUserByEmail: (email: string) => Promise<Users | undefined>,
         findUserByUsernamePassword: (username: string, password: string) => Promise<Users>,
         createUser: (username: string, email: string, pass: string) => Promise<Users | undefined>,
-        updateUserById: (id: number, password: string, email: string) => Promise<[number, Users[]] | undefined>
+        updateUserById: (id: number, password: string, email: string) => Promise<[affectedCount: number] | undefined>
 }
 
 export function UserRepository(): UserRepository{

@@ -1,7 +1,5 @@
-import { UserRepository } from '../../infrastructure/persistence/repositories/shard/TB_UsersRepository';
-import {OnlinePlayersRepository} from '../../infrastructure/persistence/repositories/vplus/OnlinePlayersRepository';
+import {OnlinePlayersRepository} from '../../infrastructure/persistence/repositories/shard/OnlinePlayersRepository';
 import { KillUniqueRepository } from '../../infrastructure/persistence/repositories/sro_dev/KillUniqueRepository';
-import { UserShardRepository } from '../../infrastructure/persistence/repositories/shard/UserRepository';
 import { CharRepository } from '../../infrastructure/persistence/repositories/shard/_ShardRepository';
 import { GuildRepository }  from '../../infrastructure/persistence/repositories/shard/GuildRepository';
 import { SiegeFortressRepository } from '../../infrastructure/persistence/repositories/shard/SiegeFortressRepository';
@@ -9,18 +7,18 @@ import SurvivalLogger from '../../infrastructure/observability/logging/logger';
 import { MetricsClient } from '../../infrastructure/metrics/prometheus-client';
 import { METRICS_TO_COLLECT } from '../../infrastructure/metrics/metric-collect';
 import {_ScheduleRepository} from '../../infrastructure/persistence/repositories/shard/_ScheduleRepository';
-import {getSystemTime} from '../../infrastructure/persistence/connectionManager/moduleConnections';
+import { getSystemTime } from '../../infrastructure/persistence/connectionManager/moduleConnections';
+import { SystemRepository } from '../../infrastructure/persistence/repositories/system/systemRepository';
 
 export async function getLoadInformation(
-    userRepository: UserRepository,
     onlinePlayersRepository: OnlinePlayersRepository,
     uniqueKillRepository: KillUniqueRepository,
-    userShardRepository: UserShardRepository,
     charRepository: CharRepository,
     guildRepository: GuildRepository,
     siegeFortressRepository: SiegeFortressRepository,
     scheduleRepository: _ScheduleRepository,
-    handlerMetrics: MetricsClient
+    handlerMetrics: MetricsClient,
+    systemRepository: SystemRepository
 ){
     const { userVisitWebSite } = METRICS_TO_COLLECT;
     SurvivalLogger.info('Init load information to load web site');
@@ -64,6 +62,9 @@ export async function getLoadInformation(
         return (Math.round(curr - goal) < Math.round(prev - goal) ? curr : prev);
     });
     console.log(nextCaptureFlagTime)
+
+    const serverTime = await systemRepository.getSystemTime()
+    console.log(serverTime)
 
 
     if (fortressInfo.length === 0){

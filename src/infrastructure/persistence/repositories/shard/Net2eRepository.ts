@@ -3,7 +3,7 @@ import { Net2e } from '../../entities/shard/TB_Net2e';
 export interface Net2eRepository {
     add: (userId: number, userName: string, password: string, question: string, answer: string) => Promise<Net2e>,
     findByID: (id: number) => Promise<Net2e[]>,
-    update: (id: number, password: string) => Promise<[number, Net2e[]]>
+    update: (id: number, password: string) => Promise<[affectedCount: number]>
 }
 export function Net2eRepository(): Net2eRepository {
     return {

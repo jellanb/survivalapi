@@ -1,7 +1,6 @@
 {
   "name": "silkroad-survival-bff",
   "version": "1.0.0",
-  "description": "",
   "main": "build/src/server.js",
   "dependencies": {
     "@types/crypto-js": "^4.0.1",
@@ -23,7 +22,7 @@
     "readline-async": "^0.1.0",
     "request": "^2.88.2",
     "request-promise": "^4.2.6",
-    "sequelize": "^6.6.5",
+    "sequelize": "^6.17.0",
     "stripe": "^8.194.0",
     "typescript": "^4.3.5",
     "typescript-logger": "^5.0.1",
@@ -46,5 +45,14 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jellanb/survivalapi.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jellanb/survivalapi/issues"
+  },
+  "homepage": "https://github.com/jellanb/survivalapi#readme",
+  "description": ""
 }

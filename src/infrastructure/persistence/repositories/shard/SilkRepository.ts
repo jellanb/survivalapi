@@ -3,7 +3,7 @@ import { Silk } from '../../entities/shard/SK_Silk'
 export interface SilkRepository {
     findById: (id: number) => Promise<Silk>,
     add: (userId: number, silkQuantity: number) => Promise<Silk | undefined>,
-    update: (userId: number, silkQuantity: number) => Promise<[number, Silk[]] | undefined>
+    update: (userId: number, silkQuantity: number) => Promise<[affectedCount: number]>
 }
 
 export function SilkRepository(): SilkRepository {
