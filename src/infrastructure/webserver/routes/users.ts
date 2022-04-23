@@ -123,7 +123,7 @@ router.get('/get-load-information', async (req, res) => {
         res.status(200);
         res.end();
     } catch (failure) {
-        SurvivalLogger.error(`[ERROR]: failed to get load data information web site! ${failure}`)
+        SurvivalLogger.error(`[ERROR]: failed to get load data information web site! ${failure.message}`)
         res.status(500);
     }
 });

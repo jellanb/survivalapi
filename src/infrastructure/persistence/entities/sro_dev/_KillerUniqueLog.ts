@@ -5,12 +5,12 @@ export class KillUnique extends Model{}
 
 KillUnique.init({
     id: {
-        autoIncrement: true,
         primaryKey: true,
+        autoIncrement: true,
         type: DataTypes.INTEGER,
         field: 'id'
     },
-    mosterId: {
+    monsterId: {
         type: DataTypes.INTEGER,
         field: 'RefMonsterId',
     },

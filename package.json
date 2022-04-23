@@ -35,11 +35,11 @@
     "@types/request": "^2.48.5",
     "@types/request-promise": "^4.1.48",
     "nodemon": "^2.0.15",
-    "ts-node": "^10.5.0"
+    "ts-node": "^10.7.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "nodemon": "nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.spec.ts' --exec 'ts-node' src/app.ts",
+    "nodemon": "nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.spec.ts' --exec ts-node src/app.ts",
     "build": "tsc -p .",
     "start": "node build/src/app.js"
   },

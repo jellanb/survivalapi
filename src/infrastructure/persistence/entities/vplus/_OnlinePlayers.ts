@@ -5,6 +5,7 @@ export class OnlinePlayers extends Model{}
 
 OnlinePlayers.init({
     jId: {
+        primaryKey: true,
         type: DataTypes.INTEGER,
         field: 'JID'
     },
@@ -79,7 +80,7 @@ OnlinePlayers.init({
 }, {
     sequelize: vPlusDB,
     freezeTableName: true,
-    tableName: '_KillerUniqueLog',
+    tableName: '_OnlinePlayers',
     createdAt: false,
     updatedAt: false
 })

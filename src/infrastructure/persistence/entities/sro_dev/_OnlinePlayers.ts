@@ -79,7 +79,7 @@ OnlinePlayers.init({
 }, {
     sequelize: vPlusDB,
     freezeTableName: true,
-    tableName: '_KillerUniqueLog',
+    tableName: '_OnlinePlayers',
     createdAt: false,
     updatedAt: false
 })

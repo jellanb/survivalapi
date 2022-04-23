@@ -42,18 +42,20 @@ router.get('/executePaymentPaypal', async (req,res) => {
     }
 });
 
-router.post('/createPaymentIntentStripe', async (req, res) => {
-    const { items } = req.body;
-    console.log(apiKeyStripe)
-
-    // Create a PaymentIntent with the order amount and currency
+router.post('/create-payment-stripe', async (req, res) => {
+    const username = req.query.username!.toString();
+    const silkQuantity = req.query.silkQuantity!.toString();
+    const amount = parseInt(req.query.amount!.toString());
+    console.log(apiKeyStripe);
+    console.log(`init payment intention from username: ${username} by silk quantity: ${silkQuantity} in stripe`);
     const paymentIntent = await stripePayment.paymentIntents.create({
-        amount: 1000,
-        currency: 'USD',
+        amount: amount,
+        currency: "usd",
         automatic_payment_methods: {
             enabled: true,
         },
     });
+
     res.send({
         clientSecret: paymentIntent.client_secret,
     });

@@ -1,13 +1,16 @@
 import { shardDB } from '../../connectionManager/moduleConnections'
 
 export interface SystemRepository{
-    getSystemTime: () => Promise<[unknown[], unknown]>
+    getSystemTime: () => Promise<unknown>
 }
 
-export async function SystemRepository(): Promise<SystemRepository> {
+export function SystemRepository(): SystemRepository {
     return {
-        getSystemTime: async () => await shardDB.query('SELECT SYSDATETIME() AS SYSTIME_TIME')
+        getSystemTime: async () => {
+            const [results] = await shardDB.query('SELECT SYSDATETIME() AS SYSTEM_TIME')
+            return results[0]
+        }
     }    
 }
 
-export default await SystemRepository()
+export default  SystemRepository();
