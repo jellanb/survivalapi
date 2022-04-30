@@ -12,6 +12,8 @@ interface userResult {
 
 interface SilkFromUser {
     silk_own: number
+    silk_gift: number
+    silkPoint: number
 }
 interface OrderPaymentResult {
     username: string | undefined,
@@ -44,9 +46,9 @@ export default async function ExecuteOrderPayment(username: string,
         const silk = await silkRepository.findById(JID);
         if (silk) {
             logger.debug(`Silk data found with id: ${JID}`);
-            const { silk_own }: SilkFromUser = JSON.parse(JSON.stringify(silk));
+            const { silk_own, silk_gift, silkPoint }: SilkFromUser = JSON.parse(JSON.stringify(silk));
             const totalSilk = silk_own + parseInt(silkRequest);
-            await silkRepository.update(JID, totalSilk);
+            await silkRepository.update(JID, totalSilk, silk_gift, silkPoint);
         } else {
             logger.debug(`Silk data not found with id: ${JID}`);
             logger.debug(`Init add silk data to user with id: ${JID} and ${silkRequest}`);

@@ -10,6 +10,8 @@ interface userResult {
 }
 interface SilkFromUser {
     silk_own: number
+    silk_gift: number
+    silkPoint: number
 }
 
 export default async function (username: string, silkPay: string, userRepository: UserRepository, silkRepository: SilkRepository) {
@@ -26,9 +28,9 @@ export default async function (username: string, silkPay: string, userRepository
     const silk = await silkRepository.findById(JID);
     if (silk) {
         SurvivalLogger.info(`Silk data found with id: ${JID}`);
-        const { silk_own }: SilkFromUser = JSON.parse(JSON.stringify(silk));
+        const { silk_own, silk_gift, silkPoint }: SilkFromUser = JSON.parse(JSON.stringify(silk));
         const silkQuantity = silk_own + parseInt(silkPay);
-        await silkRepository.update(JID, silkQuantity);
+        await silkRepository.update(JID, silkQuantity, silk_gift, silkPoint);
     } else {
         SurvivalLogger.info(`Silk data not found with id: ${JID}`);
         SurvivalLogger.info(`Init add silk data to user with id: ${JID} and ${silkPay}`);

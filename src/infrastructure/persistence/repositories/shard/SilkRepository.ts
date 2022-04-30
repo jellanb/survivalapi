@@ -3,7 +3,8 @@ import { Silk } from '../../entities/shard/SK_Silk'
 export interface SilkRepository {
     findById: (id: number) => Promise<Silk>,
     add: (userId: number, silkQuantity: number) => Promise<Silk | undefined>,
-    update: (userId: number, silkQuantity: number) => Promise<[affectedCount: number]>
+    update: (userId: number, silkQuantity: number, silk_gift: number,
+    silkPoint: number) => Promise<[affectedCount: number]>
 }
 
 export function SilkRepository(): SilkRepository {
@@ -24,12 +25,13 @@ export function SilkRepository(): SilkRepository {
                 })
                 return newSilk
         },
-        update: async (userId: number, silkQuantity: number) => {
+        update: async (userId: number, silkQuantity: number, silk_gift: number,
+        silkPoint: number) => {
                 const updateSilk = await Silk.update({
                     Id: userId,
                     SilkOwn: silkQuantity,
-                    SilkGift: 0,
-                    silkPoint: 0
+                    SilkGift: silk_gift,
+                    silkPoint: silkPoint
                 }, {
                     where: { JID: userId }
                 })
