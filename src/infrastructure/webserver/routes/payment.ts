@@ -4,6 +4,7 @@ import mercadopago from 'mercadopago';
 import SurvivalLogger from '../../observability/logging/logger';
 import UserOrderPayController from "../../../controllers/users/user-order-pay.controller";
 import ExecuteOrderPaymentController from "../../../domain/usecase/execute-order-payment.controller";
+import {rollbackSilkAccountController} from "../../../controllers/users/rollback-silk-account-controller";
 
 const router = express.Router()
 const apiKeyStripe = process.env.apiKeyStripe ?? ''
@@ -44,21 +45,41 @@ router.get('/executePaymentPaypal', async (req,res) => {
 
 router.post('/create-payment-stripe', async (req, res) => {
     const username = req.query.username!.toString();
+    const amount = parseInt(req.query.amount!.toString() + '00');
     const silkQuantity = req.query.silkQuantity!.toString();
-    const amount = parseInt(req.query.amount!.toString());
     console.log(apiKeyStripe);
-    console.log(`init payment intention from username: ${username} by silk quantity: ${silkQuantity} in stripe`);
-    const paymentIntent = await stripePayment.paymentIntents.create({
-        amount: amount,
-        currency: "usd",
-        automatic_payment_methods: {
-            enabled: true,
-        },
-    });
+    console.log(`init payment intention from username: ${username} by silk quantity: ${silkQuantity} and amount: ${amount} in stripe`);
+    try {
+        const paymentIntent = await stripePayment.paymentIntents.create({
+            amount: amount,
+            currency: "usd",
+            automatic_payment_methods: {
+                enabled: true,
+            }
+        });
+        res.send({
+            clientSecret: paymentIntent.client_secret,
+        });
+    } catch (failure) {
+        SurvivalLogger.error(`[ERROR] process payment for username: ${req.query.username!.toString()}! message: ${failure.message}`);
+        res.status(500);
+    }
 
-    res.send({
-        clientSecret: paymentIntent.client_secret,
-    });
+});
+
+router.post('/rollback-stripe-payment', async (req, res) => {
+    const username = req.query.username!.toString();
+    const silkQuantity = req.query.silkQuantity!.toString();
+    const silk = parseInt(silkQuantity);
+    console.log(silk);
+    try {
+        await rollbackSilkAccountController(username, silk);
+        res.status(200);
+        res.end();
+    }catch (failure) {
+        SurvivalLogger.error(`[ERROR] cannot rollback silk to username ${req.query.username!.toString()}! message: ${failure.message}`);
+        res.status(500);
+    }
 });
 
 router.post('/process-payment-mercadopago', async (req, res) =>{
