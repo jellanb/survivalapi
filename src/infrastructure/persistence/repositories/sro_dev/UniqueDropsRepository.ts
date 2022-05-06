@@ -1,5 +1,4 @@
 import { UniqueDrios } from '../../entities/job/UniqueDrops';
-import { Op } from "sequelize";
 
 export interface UniqueDropsRepository {
     findByName: (uniqueName: string) => Promise<UniqueDrios[]>;

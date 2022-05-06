@@ -1,5 +1,4 @@
 import { UniqueItemsDrops } from '../../entities/job/UniqueItemsDrops';
-import { Op } from "sequelize";
 
 export interface UniqueItemsDropsRepository {
     findById: (id: number) => Promise<UniqueItemsDrops[] | null>;
