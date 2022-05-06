@@ -61,7 +61,7 @@ router.post('/create-payment-stripe', async (req, res) => {
             clientSecret: paymentIntent.client_secret,
         });
     } catch (failure) {
-        SurvivalLogger.error(`[ERROR] process payment for username: ${req.query.username!.toString()}! message: ${failure.message}`);
+        SurvivalLogger.error(`[ERROR] process payment for username: ${req.query.username!.toString()}! message: ${failure}`);
         res.status(500);
     }
 
@@ -77,7 +77,7 @@ router.post('/rollback-stripe-payment', async (req, res) => {
         res.status(200);
         res.end();
     }catch (failure) {
-        SurvivalLogger.error(`[ERROR] cannot rollback silk to username ${req.query.username!.toString()}! message: ${failure.message}`);
+        SurvivalLogger.error(`[ERROR] cannot rollback silk to username ${req.query.username!.toString()}! message: ${failure}`);
         res.status(500);
     }
 });
