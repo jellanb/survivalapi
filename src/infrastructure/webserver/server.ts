@@ -9,6 +9,7 @@ import * as fs from 'fs';
 import * as http from 'http';
 import SurvivalLogger from '../observability/logging/logger';
 import config from '../../utils/config';
+import jobs from './routes/jobs';
 
 export default async function InitWebServer(){
     const httpPort = process.env['http_port'];
@@ -23,7 +24,8 @@ export default async function InitWebServer(){
     app.use(cors({origin: '*'}));
     app.use('/payment', payment);
     app.use('/users', users);
-    app.use('/survival-api', metrics)
+    app.use('/survival-api', metrics);
+    app.use('/job', jobs);
 
     const httpsServer = https.createServer({
         key: ssl.key,

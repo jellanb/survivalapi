@@ -61,11 +61,8 @@ export async function getLoadInformation(
     const nextCaptureFlagTime = arr.reduce((prev, curr) => {
         return (Math.round(curr - goal) < Math.round(prev - goal) ? curr : prev);
     });
-    console.log(nextCaptureFlagTime)
 
     const serverTime = await systemRepository.getSystemTime()
-    console.log(serverTime)
-
 
     if (fortressInfo.length === 0){
         return [
@@ -108,7 +105,7 @@ export async function getLoadInformation(
         usernameLastUniqueKill: username[0],
         fortressInfo: fortressInfo,
         nextCaptureFlagTime: nextCaptureFlagTime,
-        serverTime: await getSystemTime()
+        serverTime: serverTime
     }
 }
 

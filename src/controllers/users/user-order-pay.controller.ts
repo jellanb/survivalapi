@@ -9,7 +9,7 @@ export default async function UserOrderPayController(
     try {
         return await userOrderPay(username, amount, silkQuantity, OrderPaymentRequest, SurvivalLogger)
     } catch (failure) {
-        SurvivalLogger.error(failure.message)
+        SurvivalLogger.error(failure)
         return failure
     }
 

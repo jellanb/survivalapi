@@ -5,6 +5,7 @@ export class OnlinePlayers extends Model{}
 
 OnlinePlayers.init({
     jId: {
+        primaryKey: true,
         type: DataTypes.INTEGER,
         field: 'JID'
     },
