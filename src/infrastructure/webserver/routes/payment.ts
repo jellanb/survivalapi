@@ -3,7 +3,7 @@ import stripe from 'stripe';
 import mercadopago from 'mercadopago';
 import SurvivalLogger from '../../observability/logging/logger';
 import UserOrderPayController from "../../../controllers/users/user-order-pay.controller";
-import ExecuteOrderPaymentController from "../../../domain/usecase/execute-order-payment.controller";
+import ExecuteOrderPaymentController from "../../../controllers/users/execute-order-payment.controller";
 import {rollbackSilkAccountController} from "../../../controllers/users/rollback-silk-account-controller";
 
 const router = express.Router()
@@ -80,6 +80,13 @@ router.post('/rollback-stripe-payment', async (req, res) => {
         SurvivalLogger.error(`[ERROR] cannot rollback silk to username ${req.query.username!.toString()}! message: ${failure}`);
         res.status(500);
     }
+});
+
+router.post('/stripe-create-payment-intent', express.raw({type: 'application/json'}),async (req, res) => {
+    const id = req.query.id!.toString();
+    console.log(id);
+    //await CreatePaymentIntentController(id);
+
 });
 
 router.post('/process-payment-mercadopago', async (req, res) =>{

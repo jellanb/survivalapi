@@ -10,6 +10,8 @@ interface userResult {
 }
 interface SilkFromUser {
     silk_own: number
+    silk_gift: number
+    silkPoint: number
 }
 
 export default async function (username: string, silkRollBack: number, userRepository: UserRepository, silkRepository: SilkRepository) {
@@ -23,8 +25,8 @@ export default async function (username: string, silkRollBack: number, userRepos
     SurvivalLogger.info(`Init find silk data with id: ${JID}`);
     const silk = await silkRepository.findById(JID);
     SurvivalLogger.info(`Silk data found with id: ${JID}`);
-    const { silk_own }: SilkFromUser = JSON.parse(JSON.stringify(silk));
+    const { silk_own, silk_gift, silkPoint }: SilkFromUser = JSON.parse(JSON.stringify(silk));
     const silkQuantity = silk_own - silkRollBack;
-    await silkRepository.update(JID, silkQuantity);
+    await silkRepository.update(JID, silkQuantity, silk_gift, silkPoint);
     SurvivalLogger.info(`Finish process to rolling back transaction by username ${username} and silk: ${silkRollBack}`);
 }

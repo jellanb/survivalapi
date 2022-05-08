@@ -1,4 +1,4 @@
-import ExecuteOrderPayment from '../../controllers/users/execute-order.payment'
+import ExecuteOrderPayment from '../../domain/usecase/execute-order.payment'
 import ExecuteOrderPaymentRequest from '../../infrastructure/service/payment/execute-order-payment-request'
 import SurvivalLogger from '../../infrastructure/observability/logging/logger'
 import UserRepository from '../../infrastructure/persistence/repositories/shard/TB_UsersRepository'

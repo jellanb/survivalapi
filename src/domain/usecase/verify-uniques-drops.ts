@@ -55,7 +55,7 @@ export async function verifyUniquesDrop(
     try {
         await startUniqueDropVeriy(uniquesJob);
         await startUniqueDropVeriy(uniquesTitans);
-        await startUniqueDropVeriy(uniquesTitans);
+        await startUniqueDropVeriy(uniques110);
     } catch (e) {
         console.log(e)
     }
