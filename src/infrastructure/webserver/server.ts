@@ -2,6 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import payment from './routes/payment';
+import toolbox from './routes/toolbox';
 import users from './routes/users';
 import metrics from '../../infrastructure/webserver/routes/metrics';
 import * as https from 'https';
@@ -23,6 +24,7 @@ export default async function InitWebServer(){
     app.use(bodyParser());
     app.use(cors({origin: '*'}));
     app.use('/payment', payment);
+    app.use('/toolbox', toolbox);
     app.use('/users', users);
     app.use('/survival-api', metrics);
     app.use('/job', jobs);

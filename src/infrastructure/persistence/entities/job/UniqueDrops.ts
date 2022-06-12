@@ -1,9 +1,9 @@
 import {DataTypes, Model} from "sequelize";
 import { sroDevDB } from "../../connectionManager/moduleConnections";
 
-export class UniqueDrios extends Model{}
+export class UniqueDrops extends Model{}
 
-UniqueDrios.init({
+UniqueDrops.init({
     id:{
         type: DataTypes.INTEGER,
         field: 'ID',

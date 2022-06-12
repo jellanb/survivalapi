@@ -13,3 +13,4 @@ export interface UserResult {
     email?:string,
     errorDescription?: string
 }
+

@@ -7,6 +7,7 @@ StripePayment.init({
     id:{
         type: DataTypes.INTEGER,
         primaryKey: true,
+        autoIncrement: true,
         field: 'ID',
         allowNull: false
     },
@@ -37,7 +38,8 @@ StripePayment.init({
     },
     payment_success_date:{
         type: DataTypes.DATE,
-        field: 'Payment_Success_Date'
+        field: 'Payment_Success_Date',
+        allowNull: true
     }
 },{
     sequelize: sroDevDB,

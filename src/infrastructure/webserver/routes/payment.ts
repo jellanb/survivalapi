@@ -4,7 +4,8 @@ import mercadopago from 'mercadopago';
 import SurvivalLogger from '../../observability/logging/logger';
 import UserOrderPayController from "../../../controllers/users/user-order-pay.controller";
 import ExecuteOrderPaymentController from "../../../controllers/users/execute-order-payment.controller";
-import {rollbackSilkAccountController} from "../../../controllers/users/rollback-silk-account-controller";
+import CreatePaymentIntentController from "../../../controllers/users/create-payment-intent.controller";
+import AddPaymentSuccessFullyController from "../../../controllers/users/addPaymentSuccessFullyController";
 
 const router = express.Router()
 const apiKeyStripe = process.env.apiKeyStripe ?? ''
@@ -47,7 +48,6 @@ router.post('/create-payment-stripe', async (req, res) => {
     const username = req.query.username!.toString();
     const amount = parseInt(req.query.amount!.toString() + '00');
     const silkQuantity = req.query.silkQuantity!.toString();
-    console.log(apiKeyStripe);
     console.log(`init payment intention from username: ${username} by silk quantity: ${silkQuantity} and amount: ${amount} in stripe`);
     try {
         const paymentIntent = await stripePayment.paymentIntents.create({
@@ -57,6 +57,12 @@ router.post('/create-payment-stripe', async (req, res) => {
                 enabled: true,
             }
         });
+        await CreatePaymentIntentController({
+            username,
+            amount,
+            silk: parseInt(silkQuantity),
+            id: paymentIntent.id
+        })
         res.send({
             clientSecret: paymentIntent.client_secret,
         });
@@ -67,26 +73,15 @@ router.post('/create-payment-stripe', async (req, res) => {
 
 });
 
-router.post('/rollback-stripe-payment', async (req, res) => {
-    const username = req.query.username!.toString();
-    const silkQuantity = req.query.silkQuantity!.toString();
-    const silk = parseInt(silkQuantity);
-    console.log(silk);
+router.post('/stripe-payment-successfully', express.raw({type: 'application/json'}),async (req, res) => {
+    const id = req.query.id!.toString();
     try {
-        await rollbackSilkAccountController(username, silk);
+        await AddPaymentSuccessFullyController(id);
         res.status(200);
-        res.end();
-    }catch (failure) {
-        SurvivalLogger.error(`[ERROR] cannot rollback silk to username ${req.query.username!.toString()}! message: ${failure}`);
+    } catch (failure) {
+        console.log(failure);
         res.status(500);
     }
-});
-
-router.post('/stripe-create-payment-intent', express.raw({type: 'application/json'}),async (req, res) => {
-    const id = req.query.id!.toString();
-    console.log(id);
-    //await CreatePaymentIntentController(id);
-
 });
 
 router.post('/process-payment-mercadopago', async (req, res) =>{
