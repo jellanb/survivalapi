@@ -11,5 +11,6 @@ export interface UserResult {
     username?: string,
     password?:string,
     email?:string,
+    error: boolean,
     errorDescription?: string
 }

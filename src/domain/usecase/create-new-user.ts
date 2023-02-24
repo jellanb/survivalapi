@@ -6,14 +6,18 @@ import SurvivalLogger from '../../infrastructure/observability/logging/logger';
 export default async function createNewUser(usersDetails: UsersDetails, userRepository: UserRepository, net2eRepository: Net2eRepository): Promise<UserResult> {
         SurvivalLogger.info(`Init create new user from web site with username:${usersDetails.username} and email:${usersDetails.email}`);
         const userExist = await userRepository.findUserByName(usersDetails.username);
+        const emailResult = await userRepository.findUserByEmail(usersDetails.email);
 
         if(userExist) throw new Error('USER_ALREADY_EXIST');
+        if(emailResult) throw new Error('EMAIL_ALREADY_EXIST');
 
         const userResult = await userRepository.createUser(usersDetails.username, usersDetails.email, usersDetails.password);
         const { Id } = JSON.parse(JSON.stringify(userResult));
         const net2eResult = await net2eRepository.add(Id, usersDetails.username, usersDetails.password, usersDetails.secretQuestion, usersDetails.secretAnswer);
 
         if (!userResult || !net2eResult) throw new Error('CANT_NOT_CREATE_USER');
-        SurvivalLogger.info(`User created successfully with username:${usersDetails.username} and email:${usersDetails.email}`);
-        return { username: usersDetails.username, password: usersDetails.password, email: usersDetails.email }
+        const message = `User created successfully with username:${usersDetails.username} and email:${usersDetails.email}`
+        SurvivalLogger.info(message);
+        
+        return { username: usersDetails.username, password: usersDetails.password, email: usersDetails.email, error: false, errorDescription: message }
 }

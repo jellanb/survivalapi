@@ -53,11 +53,8 @@ export async function getLoadInformation(
 
     const scheduleCaptureFlag = await scheduleRepository.findById(12);
     const currentTime = new Date()
-    console.log(scheduleCaptureFlag.map((schedule) => schedule.getDataValue('SubInterval_StartTimeHour')))
-
     const arr = scheduleCaptureFlag.map((schedule) => schedule.getDataValue('SubInterval_StartTimeHour'))
-    const goal = currentTime.getHours()
-    console.log(goal)
+    const goal = currentTime.getHours();
     const nextCaptureFlagTime = arr.reduce((prev, curr) => {
         return (Math.round(curr - goal) < Math.round(prev - goal) ? curr : prev);
     });

@@ -14,11 +14,23 @@ export const addNewUserController = async (userDetails: UsersDetails): Promise<U
             errorMessage = error.message
             SurvivalLogger.error(`[ERROR] Cannot add new user, ${error.message}`);
         }
-        return {
+        const errorDetails = {
+            error: true,
             username: undefined,
             password: undefined,
             email: undefined,
             errorDescription: errorMessage
         }
+        switch (error.message) {
+            case 'USER_ALREADY_EXIST':
+                errorDetails.errorDescription = 'Error: User already exist!';
+                break;
+            case 'EMAIL_ALREADY_EXIST':
+                errorDetails.errorDescription = 'Error: Email already exist!';
+                break;
+            default:
+                errorDetails.errorDescription = 'Error: user cannot created.';
+        }
+        return errorDetails
     }
 }

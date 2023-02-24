@@ -29,16 +29,17 @@ interface userResult {
 }
 
 export async function LoginUser(username: string, pass: string, net2eRepository: Net2eRepository, userRepository: UserRepository, silkRepository: SilkRepository) {
-    SurvivalLogger.info(`Init sing in to user; ${username} from web site`);
+    SurvivalLogger.info(`Init login to user; ${username} from web site`);
     const user = await userRepository.findUserByUsernamePassword(username, pass);
 
     if (!user) {
-        SurvivalLogger.info(`Sing in failure to user ${username}`);
-        loginResult.description = 'Usuario y contraseña incorrectos!'
-        loginResult.isSingIn = false
+        SurvivalLogger.info(`Login failure to user ${username}`);
+        loginResult.description = 'Usuario y contraseña incorrectos!';
+        loginResult.isSingIn = false;
+        return loginResult;
     }
-        SurvivalLogger.info(`Sing in successfully to user ${username}`);
-        const { StrUserID, JID, Email, password }:userResult  = JSON.parse(JSON.stringify(user))
+        SurvivalLogger.info(`Login successfully to user ${username}`);
+        const { StrUserID, JID, Email, password }:userResult  = JSON.parse(JSON.stringify(user));
         const silk = await silkRepository.findById(JID);
         const net2e = await net2eRepository.findByID(JID);
         loginResult.userName = StrUserID
