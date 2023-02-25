@@ -24,6 +24,7 @@ export async function getLoadInformation(
     SurvivalLogger.info('Init load information to load web site');
     SurvivalLogger.info('Getting amount user online');
     const usersQuantityOnline = await onlinePlayersRepository.getQuantityUsersOn();
+    const onlinePlayersNames = await onlinePlayersRepository.getPlayersNamesOnline();
     SurvivalLogger.info(`Finish get amount user online with amount:${usersQuantityOnline}`);
 
     SurvivalLogger.info('Finding username last unique kill');
@@ -102,7 +103,8 @@ export async function getLoadInformation(
         usernameLastUniqueKill: username[0],
         fortressInfo: fortressInfo,
         nextCaptureFlagTime: nextCaptureFlagTime,
-        serverTime: serverTime
+        serverTime: serverTime,
+        onlinePlayersNames : onlinePlayersNames?.map((onlinePlayer) => onlinePlayer.getDataValue('CharName16'))
     }
 }
 
