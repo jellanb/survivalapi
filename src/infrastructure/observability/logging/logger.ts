@@ -11,6 +11,7 @@ export interface SurvivalLogger {
 
 export function SurvivalLogger(): SurvivalLogger {
     const prefix: string = '[Survival-api]';
+    const now = new Date();
     const transports = [];
     transports.push(new winston.transports.Console());
     const logger = winston.createLogger({
@@ -20,11 +21,11 @@ export function SurvivalLogger(): SurvivalLogger {
         }
     })
     return {
-        error: (messages) => logger.error(`${prefix} ${processMessage(messages)}`),
-        warn: (messages) => logger.warn(`${prefix} ${processMessage(messages)}`),
-        info: (messages) => logger.info(`${prefix} ${processMessage(messages)}`),
-        verbose: (messages) => logger.verbose(`${prefix} ${processMessage(messages)}`),
-        debug: (messages) => logger.debug(`${prefix} ${processMessage(messages)}`)
+        error: (messages) => logger.error(`${formatDate(now)}${prefix} ${processMessage(messages)}`),
+        warn: (messages) => logger.warn(`${formatDate(now)}${prefix} ${processMessage(messages)}`),
+        info: (messages) => logger.info(`${formatDate(now)}${prefix} ${processMessage(messages)}`),
+        verbose: (messages) => logger.verbose(`${formatDate(now)}${prefix} ${processMessage(messages)}`),
+        debug: (messages) => logger.debug(`${formatDate(now)}${prefix} ${processMessage(messages)}`)
     }
 }
 
@@ -40,5 +41,25 @@ function processMessage(msg: [] | Object | null | string) {
     }
     return msg;
 }
+
+function padTo2Digits(num: number) {
+    return num.toString().padStart(2, '0');
+  }
+
+function formatDate(date: Date) {
+    return (
+        `[${[
+        date.getFullYear(),
+        padTo2Digits(date.getMonth() + 1),
+        padTo2Digits(date.getDate()),
+      ].join('-') +
+      ' ' +
+      [
+        padTo2Digits(date.getHours()),
+        padTo2Digits(date.getMinutes()),
+        padTo2Digits(date.getSeconds()),
+      ].join(':')}]`
+    );
+  }
 
 export default SurvivalLogger();
