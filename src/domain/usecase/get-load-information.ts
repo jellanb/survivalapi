@@ -7,7 +7,6 @@ import SurvivalLogger from '../../infrastructure/observability/logging/logger';
 import { MetricsClient } from '../../infrastructure/metrics/prometheus-client';
 import { METRICS_TO_COLLECT } from '../../infrastructure/metrics/metric-collect';
 import {_ScheduleRepository} from '../../infrastructure/persistence/repositories/shard/_ScheduleRepository';
-import { getSystemTime } from '../../infrastructure/persistence/connectionManager/moduleConnections';
 import { SystemRepository } from '../../infrastructure/persistence/repositories/system/systemRepository';
 
 export async function getLoadInformation(
