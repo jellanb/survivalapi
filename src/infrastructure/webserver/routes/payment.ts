@@ -47,7 +47,6 @@ router.post('/create-payment-stripe', async (req, res) => {
     const username = req.query.username!.toString();
     const amount = parseInt(req.query.amount!.toString() + '00');
     const silkQuantity = req.query.silkQuantity!.toString();
-    console.log(apiKeyStripe);
     console.log(`init payment intention from username: ${username} by silk quantity: ${silkQuantity} and amount: ${amount} in stripe`);
     try {
         const paymentIntent = await stripePayment.paymentIntents.create({

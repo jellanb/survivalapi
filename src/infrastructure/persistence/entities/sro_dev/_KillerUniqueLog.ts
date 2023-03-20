@@ -21,6 +21,14 @@ KillUnique.init({
     killData: {
         type: DataTypes.DATE,
         field: 'KillTime'
+    },
+    apearedTime: {
+        type: DataTypes.DATE,
+        field: 'AppearedTime',
+    },
+    isDeath: {
+        type: DataTypes.BOOLEAN,
+        field: 'IsDeath',
     }
 }, {
     sequelize: sroDevDB,

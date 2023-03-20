@@ -3,6 +3,7 @@ import { Op } from "sequelize";
 
 export interface KillUniqueRepository {
     findLastKill: () => Promise<KillUnique[]>;
+    findUniqueKillInfoByUniqueId: (id: number) => Promise<KillUnique | null>;
 }
 
 export function KillUniqueRepository(): KillUniqueRepository {
@@ -11,7 +12,12 @@ export function KillUniqueRepository(): KillUniqueRepository {
            where: { CharID : {[Op.not]: null} },
                limit: 1,
                order: [['KillTime', 'DESC']]
-       })
+       }),
+       findUniqueKillInfoByUniqueId: async (id: number) => await KillUnique.findOne({
+        where: { RefMonsterID : id },
+            limit: 1,
+            order: [['AppearedTime', 'DESC']]
+    })
    }
 }
 

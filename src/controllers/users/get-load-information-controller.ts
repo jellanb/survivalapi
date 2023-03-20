@@ -7,6 +7,7 @@ import OnlinePlayersRepository from '../../infrastructure/persistence/repositori
 import { handlerMetrics } from '../../infrastructure/metrics';
 import _ScheduleRepository from '../../infrastructure/persistence/repositories/shard/_ScheduleRepository';
 import SystemRepository from '../../infrastructure/persistence/repositories/system/systemRepository';
+import _RefObjCommonRepository from '../../infrastructure/persistence/repositories/shard/_RefObjCommonRepository';
 
 export function getLoadInformationController() {
         return getLoadInformation(
@@ -17,7 +18,8 @@ export function getLoadInformationController() {
             SiegeFortressRepository,
             _ScheduleRepository,
             handlerMetrics,
-            SystemRepository
+            SystemRepository,
+            _RefObjCommonRepository
         );
 }
 

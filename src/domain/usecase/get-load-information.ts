@@ -8,6 +8,7 @@ import { MetricsClient } from '../../infrastructure/metrics/prometheus-client';
 import { METRICS_TO_COLLECT } from '../../infrastructure/metrics/metric-collect';
 import {_ScheduleRepository} from '../../infrastructure/persistence/repositories/shard/_ScheduleRepository';
 import { SystemRepository } from '../../infrastructure/persistence/repositories/system/systemRepository';
+import { RefObjCommonRepository } from '../../infrastructure/persistence/repositories/shard/_RefObjCommonRepository';
 
 export async function getLoadInformation(
     onlinePlayersRepository: OnlinePlayersRepository,
@@ -17,9 +18,25 @@ export async function getLoadInformation(
     siegeFortressRepository: SiegeFortressRepository,
     scheduleRepository: _ScheduleRepository,
     handlerMetrics: MetricsClient,
-    systemRepository: SystemRepository
+    systemRepository: SystemRepository,
+    refObjCommonRepository: RefObjCommonRepository
 ){
     const { userVisitWebSite } = METRICS_TO_COLLECT;
+    const uniquesID = [
+        1954,
+        5871,
+        1982,
+        14936,
+        2002,
+        3810,
+        3875,
+        //41418,//juno
+        //41419,//jupiter
+        //41417,//earth
+        //41421,//zielksa
+        //41423//baal
+    ];
+    let charIDLastUniqueKill = [];
     SurvivalLogger.info('Init load information to load web site');
     SurvivalLogger.info('Getting amount user online');
     const usersQuantityOnline = await onlinePlayersRepository.getQuantityUsersOn();
@@ -33,6 +50,32 @@ export async function getLoadInformation(
     const username = await charRepository.findCharById(charId)
     if (!username) return
     SurvivalLogger.info(`Finish username last unique kill with username: ${username[0].getDataValue('CharName16')}`);
+
+    SurvivalLogger.info('Finding last unique kill list');
+    for await (const uniqueID of uniquesID) {
+        const uniqueKill = await uniqueKillRepository.findUniqueKillInfoByUniqueId(uniqueID);
+        if (!uniqueKill) continue;
+        const char = await charRepository.findCharById(uniqueKill!.getDataValue('charId'));
+        const username = char
+        const monsterId = uniqueKill!.getDataValue('monsterId');
+        const refObjCommon = await refObjCommonRepository.findById(monsterId);
+        const monsterName = refObjCommon?.getDataValue('name_object');
+        const id = uniqueKill!.getDataValue('id');
+        const killDate = uniqueKill!.getDataValue('killData');
+        const apearedTime = uniqueKill.getDataValue('apearedTime');
+        const isDeath = uniqueKill!.getDataValue('isDeath');
+        if (uniqueKill) {
+            charIDLastUniqueKill.push({
+                id,
+                charName:username![0],
+                monsterName,
+                killDate,
+                apearedTime,
+                isDeath
+            }) 
+        }
+    }
+    SurvivalLogger.info('Finish last unique kill list');
 
     SurvivalLogger.info(`Init guilds name occupied fortress`);
     const fortressInfo = []
@@ -62,12 +105,10 @@ export async function getLoadInformation(
     const serverTime = await systemRepository.getSystemTime()
 
     if (fortressInfo.length === 0){
-        return [
-            {
-                fortressName: 'JG Fortress:',
-                guildName: 'Not Occupied'
-            }
-        ]
+        fortressInfo.push({
+            fortressName: 'JG Fortress:',
+            guildName: 'Not Occupied'
+        })
     }
 
     if (!fortressInfo.find((ftwInfo) => ftwInfo.fortressName === 'JG Fortress:')){
@@ -98,12 +139,13 @@ export async function getLoadInformation(
     })
 
     return {
-        usersOnline: usersQuantityOnline,
+        usersOnline: usersQuantityOnline ?? 0,
         usernameLastUniqueKill: username[0],
         fortressInfo: fortressInfo,
-        nextCaptureFlagTime: nextCaptureFlagTime,
+        nextCaptureFlagTime: nextCaptureFlagTime ?? 0,
         serverTime: serverTime,
-        onlinePlayersNames : onlinePlayersNames?.map((onlinePlayer) => onlinePlayer.getDataValue('CharName16'))
+        onlinePlayersNames : onlinePlayersNames?.map((onlinePlayer) => onlinePlayer.getDataValue('CharName16')),
+        lastKillByUserName: charIDLastUniqueKill
     }
 }
 
