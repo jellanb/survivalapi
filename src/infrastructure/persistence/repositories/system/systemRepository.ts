@@ -1,14 +1,15 @@
 import { shardDB } from '../../connectionManager/moduleConnections'
+import {QueryTypes} from "sequelize";
 
 export interface SystemRepository{
-    getSystemTime: () => Promise<unknown>
+    getSystemTime: () => Promise<string>
 }
 
 export function SystemRepository(): SystemRepository {
     return {
         getSystemTime: async () => {
             const [results] = await shardDB.query('SELECT SYSDATETIME() AS SYSTEM_TIME')
-            return results[0]
+            return JSON.stringify(results[0])
         }
     }    
 }

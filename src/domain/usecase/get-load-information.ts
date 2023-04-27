@@ -3,7 +3,7 @@ import { KillUniqueRepository } from '../../infrastructure/persistence/repositor
 import { CharRepository } from '../../infrastructure/persistence/repositories/shard/_ShardRepository';
 import { GuildRepository }  from '../../infrastructure/persistence/repositories/shard/GuildRepository';
 import { SiegeFortressRepository } from '../../infrastructure/persistence/repositories/shard/SiegeFortressRepository';
-import SurvivalLogger from '../../infrastructure/observability/logging/logger';
+import log from '../../infrastructure/observability/logging/logger';
 import { MetricsClient } from '../../infrastructure/metrics/prometheus-client';
 import { METRICS_TO_COLLECT } from '../../infrastructure/metrics/metric-collect';
 import {_ScheduleRepository} from '../../infrastructure/persistence/repositories/shard/_ScheduleRepository';
@@ -37,21 +37,21 @@ export async function getLoadInformation(
         //41423//baal
     ];
     let charIDLastUniqueKill = [];
-    SurvivalLogger.info('Init load information to load web site');
-    SurvivalLogger.info('Getting amount user online');
+    log.info('Init load information to load web site');
+    log.info('Getting amount user online');
     const usersQuantityOnline = await onlinePlayersRepository.getQuantityUsersOn();
     const onlinePlayersNames = await onlinePlayersRepository.getPlayersNamesOnline();
-    SurvivalLogger.info(`Finish get amount user online with amount:${usersQuantityOnline}`);
+    log.info(`Finish get amount user online with amount:${usersQuantityOnline}`);
 
-    SurvivalLogger.info('Finding username last unique kill');
+    log.info('Finding username last unique kill');
     const uniqueKill = await uniqueKillRepository.findLastKill();
     const charId = uniqueKill[0].getDataValue('charId')
     if (!charId) return
     const username = await charRepository.findCharById(charId)
     if (!username) return
-    SurvivalLogger.info(`Finish username last unique kill with username: ${username[0].getDataValue('CharName16')}`);
+    log.info(`Finish username last unique kill with username: ${username[0].getDataValue('CharName16')}`);
 
-    SurvivalLogger.info('Finding last unique kill list');
+    log.info('Finding last unique kill list');
     for await (const uniqueID of uniquesID) {
         const uniqueKill = await uniqueKillRepository.findUniqueKillInfoByUniqueId(uniqueID);
         if (!uniqueKill) continue;
@@ -75,9 +75,9 @@ export async function getLoadInformation(
             }) 
         }
     }
-    SurvivalLogger.info('Finish last unique kill list');
+    log.info('Finish last unique kill list');
 
-    SurvivalLogger.info(`Init guilds name occupied fortress`);
+    log.info(`Init guilds name occupied fortress`);
     const fortressInfo = []
     const fortressNames = await siegeFortressRepository.getAllGuildOccupiedFortress();
     if (!fortressNames) {
@@ -90,9 +90,9 @@ export async function getLoadInformation(
             fortressName: await detectFortressName(fortressName.getDataValue('FortressID')),
             guildName: guildName?.getDataValue('Name')
         })
-        SurvivalLogger.info(`Guilds name occupied fortress found with name: ${guildName?.getDataValue('Name')}`);
+        log.info(`Guilds name occupied fortress found with name: ${guildName?.getDataValue('Name')}`);
     }
-    SurvivalLogger.info(`Finish find guilds name occupied fortress`);
+    log.info(`Finish find guilds name occupied fortress`);
 
     const scheduleCaptureFlag = await scheduleRepository.findById(12);
     const currentTime = new Date()

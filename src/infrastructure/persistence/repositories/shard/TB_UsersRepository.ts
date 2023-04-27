@@ -3,7 +3,7 @@ import { Users } from '../../entities/shard/TB_Users'
 export interface UserRepository {
         findUserByName: (name: string) => Promise<Users | undefined>,
         findUserByEmail: (email: string) => Promise<Users | undefined>,
-        findUserByUsernamePassword: (username: string, password: string) => Promise<Users>,
+        findUserByUsernamePassword: (username: string, password: string) => Promise<Users | undefined>,
         createUser: (username: string, email: string, pass: string) => Promise<Users | undefined>,
         updateUserById: (id: number, password: string, email: string) => Promise<[affectedCount: number] | undefined>
 }
@@ -13,7 +13,7 @@ export function UserRepository(): UserRepository{
         findUserByName: async (name: string) => {
             try{
                 const result = await Users.findAll({
-                    attributes: ['StrUserId', 'JID'],
+                    attributes: ['StrUserId', 'JID', 'Email'],
                     where: { strUserId: name }
                 });
                 return result[0];
@@ -65,8 +65,7 @@ export function UserRepository(): UserRepository{
                     email: email
                 }, {
                     where: { JID: id }
-                })
-                console.log(`User: ${id} update successfully!`)
+                });
                 return updateSilk
             } catch (error) {
                 console.log(error)

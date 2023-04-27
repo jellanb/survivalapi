@@ -22,6 +22,9 @@ const paypalUrl = process.env['paypalUrl'];
 const mercadoPagoAccessToken = process.env['ACCESS_TOKEN_MP'];
 const logLevel = process.env['logLevel'];
 
+const userEmail = process.env['userEmail'];
+const passEmail = process.env['passEmail'];
+
 export = {
     serverDatabase,
     accountDatabase,
@@ -39,6 +42,8 @@ export = {
     paypalUrl,
     mercadoPagoAccessToken,
     logLevel,
+    userEmail,
+    passEmail
 }
 
 
